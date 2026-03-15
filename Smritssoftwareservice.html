@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smrits Software Service — Building the Future with AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+:root {
+  --bg-deep: #020510;
+  --bg-dark: #060d1f;
+  --bg-card: rgba(255,255,255,0.04);
+  --glass: rgba(255,255,255,0.06);
+  --glass-border: rgba(255,255,255,0.12);
+  --cyan: #00f5ff;
+  --purple: #7c3aff;
+  --pink: #ff2d78;
+  --gold: #ffd700;
+  --text: #dde4f5;
+  --text-dim: #8892b0;
+  --text-bright: #ffffff;
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Exo 2', sans-serif;
+  --glow-cyan: 0 0 30px rgba(0,245,255,0.3);
+  --glow-purple: 0 0 30px rgba(124,58,255,0.3);
+  --transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ===== CUSTOM CURSOR ===== */
+.cursor { position:fixed; width:12px; height:12px; border-radius:50%; background:var(--cyan); pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s; mix-blend-mode: screen; }
+.cursor-ring { position:fixed; width:36px; height:36px; border-radius:50%; border:1px solid rgba(0,245,255,0.5); pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition: transform 0.18s ease-out, width 0.3s, height 0.3s; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--cyan), var(--purple)); border-radius: 10px; }
+
+/* ===== CANVAS BG ===== */
+#hero-canvas { position:absolute; inset:0; z-index:0; }
+
+/* ===== NOISE OVERLAY ===== */
+body::before {
+  content:''; position:fixed; inset:0; z-index:1; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:1000;
+  padding: 1rem 4rem;
+  display: flex; align-items:center; justify-content:space-between;
+  background: rgba(2,5,16,0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: var(--transition);
+}
+nav.scrolled { padding: 0.75rem 4rem; box-shadow: 0 4px 40px rgba(0,0,0,0.4); }
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 1.3rem; font-weight:700;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-decoration:none; letter-spacing: 1px;
+}
+.nav-logo span { color: var(--cyan); }
+.nav-links { display:flex; gap:2.5rem; list-style:none; }
+.nav-links a {
+  color: var(--text-dim); text-decoration:none; font-size:0.88rem; font-weight:500;
+  letter-spacing:0.5px; transition: color 0.3s; position:relative; text-transform:uppercase;
+}
+.nav-links a::after {
+  content:''; position:absolute; bottom:-4px; left:0; width:0; height:1px;
+  background: linear-gradient(var(--cyan), var(--purple)); transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover::after { width:100%; }
+.nav-cta {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: #fff; border:none; padding:0.6rem 1.6rem;
+  border-radius:50px; font-family: var(--font-body); font-weight:600;
+  font-size:0.85rem; cursor:none; letter-spacing:0.5px;
+  transition: var(--transition); box-shadow: var(--glow-cyan);
+}
+.nav-cta:hover { transform:translateY(-2px); box-shadow: 0 0 40px rgba(0,245,255,0.5); }
+.nav-hamburger { display:none; flex-direction:column; gap:5px; cursor:none; }
+.nav-hamburger span { width:24px; height:2px; background:var(--text); border-radius:2px; }
+
+/* ===== SECTIONS ===== */
+section { position:relative; z-index:2; }
+
+/* ===== HERO ===== */
+#home {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding: 8rem 2rem 4rem; text-align:center; overflow:hidden;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,255,0.25) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,245,255,0.1) 0%, transparent 50%),
+              var(--bg-deep);
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  background: rgba(0,245,255,0.08); border:1px solid rgba(0,245,255,0.25);
+  padding:0.4rem 1.2rem; border-radius:50px;
+  font-size:0.8rem; font-weight:600; letter-spacing:2px;
+  color:var(--cyan); text-transform:uppercase; margin-bottom:2rem;
+  animation: fadeInDown 0.8s ease forwards;
+}
+.hero-badge::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--cyan); animation: pulse-dot 1.5s infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+h1.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-weight:900; line-height:1.05; letter-spacing:-1px;
+  max-width:900px; margin:0 auto 1.5rem;
+  animation: fadeInUp 0.9s 0.2s ease forwards; opacity:0;
+}
+.hero-title .line1 { color: var(--text-bright); display:block; }
+.hero-title .line2 {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--pink) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  display:block;
+}
+.hero-sub {
+  font-size:1.15rem; color:var(--text-dim); max-width:560px; margin:0 auto 3rem;
+  font-weight:300; line-height:1.8;
+  animation: fadeInUp 0.9s 0.4s ease forwards; opacity:0;
+}
+.hero-btns {
+  display:flex; gap:1.2rem; flex-wrap:wrap; justify-content:center;
+  animation: fadeInUp 0.9s 0.6s ease forwards; opacity:0;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color:#fff; border:none; padding:0.9rem 2.4rem;
+  border-radius:50px; font-family:var(--font-body); font-weight:700;
+  font-size:1rem; cursor:none; letter-spacing:0.5px;
+  transition: var(--transition); box-shadow: 0 4px 30px rgba(0,245,255,0.3);
+  text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 8px 40px rgba(0,245,255,0.5); }
+.btn-secondary {
+  background:transparent; color:var(--text); border:1px solid var(--glass-border);
+  padding:0.9rem 2.4rem; border-radius:50px;
+  font-family:var(--font-body); font-weight:600; font-size:1rem;
+  cursor:none; letter-spacing:0.5px; transition:var(--transition);
+  text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem;
+  backdrop-filter:blur(10px);
+}
+.btn-secondary:hover { border-color:var(--cyan); color:var(--cyan); transform:translateY(-3px); }
+.hero-stats {
+  display:flex; gap:4rem; flex-wrap:wrap; justify-content:center;
+  margin-top:5rem;
+  animation: fadeInUp 0.9s 0.8s ease forwards; opacity:0;
+}
+.stat { text-align:center; }
+.stat-num {
+  font-family:var(--font-display); font-size:2.2rem; font-weight:700;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.stat-label { font-size:0.8rem; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; }
+.hero-scroll-indicator {
+  position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+  color:var(--text-dim); font-size:0.75rem; letter-spacing:2px; text-transform:uppercase;
+  animation: fadeIn 1.5s 1.5s ease forwards; opacity:0;
+}
+.scroll-line {
+  width:1px; height:40px;
+  background:linear-gradient(var(--cyan), transparent);
+  animation: scrollPulse 2s infinite;
+}
+@keyframes scrollPulse { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:0.3;transform:scaleY(0.5)} }
+
+/* ===== FLOATING ORBS ===== */
+.orb {
+  position:absolute; border-radius:50%; pointer-events:none; z-index:0;
+  filter:blur(80px); animation: orbFloat linear infinite;
+}
+.orb-1 { width:600px;height:600px; background:radial-gradient(circle,rgba(124,58,255,0.15),transparent); top:-200px; right:-200px; animation-duration:20s; }
+.orb-2 { width:400px;height:400px; background:radial-gradient(circle,rgba(0,245,255,0.12),transparent); bottom:0; left:-100px; animation-duration:15s; animation-delay:-7s; }
+.orb-3 { width:300px;height:300px; background:radial-gradient(circle,rgba(255,45,120,0.1),transparent); top:40%; left:60%; animation-duration:18s; animation-delay:-10s; }
+@keyframes orbFloat {
+  0%,100%{transform:translateY(0) rotate(0)} 33%{transform:translateY(-30px) rotate(120deg)} 66%{transform:translateY(15px) rotate(240deg)}
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.reveal { opacity:0; transform:translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+.reveal-left { opacity:0; transform:translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal-left.visible { opacity:1; transform:translateX(0); }
+.reveal-right { opacity:0; transform:translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal-right.visible { opacity:1; transform:translateX(0); }
+
+/* ===== SECTION STYLES ===== */
+.section-tag {
+  display:inline-block; font-size:0.75rem; font-weight:700; letter-spacing:3px;
+  text-transform:uppercase; color:var(--cyan); margin-bottom:1rem;
+  font-family:var(--font-display);
+}
+.section-title {
+  font-family:var(--font-display); font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:800; color:var(--text-bright); line-height:1.15; margin-bottom:1.2rem;
+}
+.section-title span { background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.section-sub { color:var(--text-dim); font-size:1rem; max-width:560px; line-height:1.8; font-weight:300; }
+.section-center { text-align:center; }
+.section-center .section-sub { margin:0 auto; }
+
+/* ===== DIVIDER ===== */
+.gradient-divider { height:1px; background:linear-gradient(90deg,transparent,var(--glass-border),transparent); margin:0; }
+
+/* ===== ABOUT ===== */
+#about {
+  padding:7rem 4rem;
+  background: radial-gradient(ellipse 60% 50% at 0% 50%, rgba(0,245,255,0.05) 0%, transparent 60%),
+              var(--bg-deep);
+}
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; max-width:1200px; margin:0 auto; }
+.about-visual {
+  position:relative; height:500px; display:flex; align-items:center; justify-content:center;
+}
+.about-sphere {
+  width:360px; height:360px; border-radius:50%;
+  background: conic-gradient(from 0deg, var(--purple), var(--cyan), var(--pink), var(--purple));
+  animation: sphereSpin 10s linear infinite;
+  position:relative; filter:blur(0);
+}
+.about-sphere::before {
+  content:''; position:absolute; inset:4px; border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), var(--bg-deep) 60%);
+}
+.about-sphere::after {
+  content:''; position:absolute; inset:-20px; border-radius:50%;
+  background: conic-gradient(from 0deg, transparent 60%, rgba(0,245,255,0.15), transparent);
+  animation: sphereSpin 6s linear infinite reverse; border:1px dashed rgba(0,245,255,0.2);
+}
+@keyframes sphereSpin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.about-ring {
+  position:absolute; border-radius:50%; border:1px solid rgba(0,245,255,0.15);
+  animation: ringPulse 4s ease-in-out infinite;
+}
+.ring-1 { width:420px; height:420px; animation-delay:0s; }
+.ring-2 { width:480px; height:480px; animation-delay:1.5s; }
+.ring-3 { width:540px; height:540px; animation-delay:3s; }
+@keyframes ringPulse { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:0.1;transform:scale(1.03)} }
+.floating-icon {
+  position:absolute; background:var(--glass); border:1px solid var(--glass-border);
+  backdrop-filter:blur(10px); border-radius:16px; padding:1rem;
+  font-size:1.6rem; animation:iconFloat 6s ease-in-out infinite;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.fi-1 { top:40px; left:0; animation-delay:0s; }
+.fi-2 { top:80px; right:0; animation-delay:1.5s; }
+.fi-3 { bottom:80px; left:10px; animation-delay:3s; }
+.fi-4 { bottom:40px; right:10px; animation-delay:4.5s; }
+@keyframes iconFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+.about-content { display:flex; flex-direction:column; gap:2rem; }
+.about-card {
+  background:var(--bg-card); border:1px solid var(--glass-border);
+  border-radius:16px; padding:1.5rem 2rem; backdrop-filter:blur(10px);
+  transition:var(--transition); display:flex; align-items:flex-start; gap:1.2rem;
+}
+.about-card:hover { border-color:var(--cyan); transform:translateX(8px); box-shadow:var(--glow-cyan); }
+.about-card-icon { font-size:2rem; flex-shrink:0; }
+.about-card h3 { font-family:var(--font-display); font-size:0.95rem; color:var(--cyan); margin-bottom:0.4rem; letter-spacing:0.5px; }
+.about-card p { font-size:0.9rem; color:var(--text-dim); line-height:1.7; }
+
+/* ===== SERVICES ===== */
+#services {
+  padding:7rem 4rem;
+  background: radial-gradient(ellipse 60% 50% at 100% 50%, rgba(124,58,255,0.07) 0%, transparent 60%), var(--bg-dark);
+}
+.services-wrapper { max-width:1200px; margin:0 auto; }
+.service-category { margin-bottom:4rem; }
+.service-cat-header {
+  display:flex; align-items:center; gap:1rem; margin-bottom:2rem;
+}
+.cat-icon { font-size:1.8rem; }
+.cat-title { font-family:var(--font-display); font-size:1.1rem; color:var(--text-bright); letter-spacing:0.5px; }
+.cat-line { flex:1; height:1px; background:var(--glass-border); }
+.service-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1.2rem; }
+.service-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:14px; padding:1.5rem; backdrop-filter:blur(14px);
+  transition:var(--transition); cursor:none; position:relative; overflow:hidden;
+}
+.service-card::before {
+  content:''; position:absolute; inset:0; border-radius:14px;
+  background:linear-gradient(135deg,rgba(0,245,255,0.04),transparent);
+  opacity:0; transition:opacity 0.3s;
+}
+.service-card:hover { transform:translateY(-6px); border-color:rgba(0,245,255,0.4); box-shadow:var(--glow-cyan); }
+.service-card:hover::before { opacity:1; }
+.service-card-icon { font-size:1.8rem; margin-bottom:0.8rem; display:block; }
+.service-card h4 { font-size:0.88rem; font-weight:600; color:var(--text-bright); margin-bottom:0.4rem; }
+.service-card p { font-size:0.8rem; color:var(--text-dim); line-height:1.6; }
+
+/* ===== PRODUCTS ===== */
+#products { padding:7rem 4rem; background:var(--bg-deep); }
+.products-wrapper { max-width:1200px; margin:0 auto; }
+.products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.8rem; margin-top:4rem; }
+.product-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:20px; padding:2rem; backdrop-filter:blur(16px);
+  transition:var(--transition); cursor:none; position:relative; overflow:hidden;
+  display:flex; flex-direction:column; gap:1rem;
+}
+.product-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));
+  transform:scaleX(0); transform-origin:left; transition:transform 0.4s ease;
+}
+.product-card:hover { transform:translateY(-8px); box-shadow:0 20px 60px rgba(0,0,0,0.4), var(--glow-purple); border-color:rgba(124,58,255,0.4); }
+.product-card:hover::after { transform:scaleX(1); }
+.product-icon-wrap {
+  width:60px; height:60px; border-radius:16px;
+  background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(124,58,255,0.15));
+  border:1px solid rgba(0,245,255,0.2); display:flex; align-items:center;
+  justify-content:center; font-size:1.8rem;
+  transition:transform 0.3s;
+}
+.product-card:hover .product-icon-wrap { transform:scale(1.1) rotate(5deg); }
+.product-card h3 { font-family:var(--font-display); font-size:0.95rem; color:var(--text-bright); letter-spacing:0.5px; }
+.product-card p { font-size:0.88rem; color:var(--text-dim); line-height:1.7; flex:1; }
+.product-badge {
+  display:inline-block; background:rgba(0,245,255,0.08); border:1px solid rgba(0,245,255,0.2);
+  color:var(--cyan); font-size:0.7rem; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; padding:0.25rem 0.8rem; border-radius:50px;
+}
+.btn-demo {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  background:linear-gradient(135deg,rgba(0,245,255,0.12),rgba(124,58,255,0.12));
+  border:1px solid rgba(0,245,255,0.25); color:var(--cyan);
+  padding:0.6rem 1.4rem; border-radius:50px; font-size:0.85rem; font-weight:600;
+  cursor:none; transition:var(--transition); align-self:flex-start;
+  font-family:var(--font-body);
+}
+.btn-demo:hover { background:linear-gradient(135deg,var(--cyan),var(--purple)); color:#fff; border-color:transparent; transform:translateY(-2px); }
+
+/* ===== PORTFOLIO ===== */
+#portfolio { padding:7rem 4rem; background:var(--bg-dark); }
+.portfolio-wrapper { max-width:1200px; margin:0 auto; }
+.portfolio-grid { display:grid; grid-template-columns:repeat(12,1fr); gap:1.5rem; margin-top:4rem; }
+.port-item {
+  border-radius:20px; overflow:hidden; cursor:none;
+  transition:var(--transition); position:relative;
+  border:1px solid var(--glass-border);
+  background:var(--glass); backdrop-filter:blur(10px);
+}
+.port-item:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,0,0,0.5); border-color:rgba(0,245,255,0.3); }
+.port-1 { grid-column:span 7; }
+.port-2 { grid-column:span 5; }
+.port-3 { grid-column:span 4; }
+.port-4 { grid-column:span 4; }
+.port-5 { grid-column:span 4; }
+.port-visual {
+  height:260px; display:flex; align-items:center; justify-content:center;
+  font-size:4rem; position:relative; overflow:hidden;
+}
+.port-1 .port-visual { height:320px; }
+.port-visual-bg {
+  position:absolute; inset:0;
+  transition:transform 0.5s ease;
+}
+.port-item:hover .port-visual-bg { transform:scale(1.05); }
+.pv-1 { background:linear-gradient(135deg,#0a1628,#1a0b3b,#0d1f3c); }
+.pv-2 { background:linear-gradient(135deg,#0b1e12,#071428,#1a0531); }
+.pv-3 { background:linear-gradient(135deg,#1a0a0a,#0a1a0a,#0a0a1a); }
+.pv-4 { background:linear-gradient(135deg,#0a0f1a,#1a100a,#0a1a15); }
+.pv-5 { background:linear-gradient(135deg,#1a1a0a,#0a0a1a,#1a0a1a); }
+.port-visual .emoji-icon { font-size:5rem; z-index:1; filter:drop-shadow(0 0 20px rgba(0,245,255,0.5)); }
+.port-info { padding:1.5rem; }
+.port-info h4 { font-family:var(--font-display); font-size:0.9rem; color:var(--text-bright); margin-bottom:0.3rem; }
+.port-info p { font-size:0.82rem; color:var(--text-dim); }
+.port-tags { display:flex; gap:0.5rem; margin-top:0.8rem; flex-wrap:wrap; }
+.port-tag {
+  font-size:0.7rem; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+  padding:0.2rem 0.7rem; border-radius:50px;
+  background:rgba(0,245,255,0.08); border:1px solid rgba(0,245,255,0.15); color:var(--cyan);
+}
+.grid-lines {
+  position:absolute; inset:0; pointer-events:none; overflow:hidden; opacity:0.15; z-index:1;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.5) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,245,255,0.5) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(ellipse at center,rgba(0,0,0,0.8),transparent 70%);
+}
+
+/* ===== PRICING ===== */
+#pricing { padding:7rem 4rem; background:var(--bg-deep); }
+.pricing-wrapper { max-width:1100px; margin:0 auto; }
+.pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.8rem; margin-top:4rem; }
+.price-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:24px; padding:2.5rem; backdrop-filter:blur(16px);
+  transition:var(--transition); cursor:none; position:relative; overflow:hidden;
+}
+.price-card.featured {
+  background:linear-gradient(145deg,rgba(124,58,255,0.15),rgba(0,245,255,0.08));
+  border-color:rgba(124,58,255,0.5); transform:scale(1.03);
+  box-shadow: 0 0 60px rgba(124,58,255,0.25);
+}
+.price-card:hover { transform:translateY(-8px); box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.price-card.featured:hover { transform:scale(1.03) translateY(-8px); }
+.price-popular {
+  position:absolute; top:1.5rem; right:1.5rem;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#fff; font-size:0.7rem; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; padding:0.3rem 0.9rem; border-radius:50px;
+}
+.price-tier { font-family:var(--font-display); font-size:0.75rem; color:var(--cyan); letter-spacing:3px; text-transform:uppercase; margin-bottom:0.8rem; }
+.price-name { font-family:var(--font-display); font-size:1.5rem; color:var(--text-bright); margin-bottom:0.5rem; }
+.price-amount { margin:1.5rem 0; }
+.price-amount .amount { font-family:var(--font-display); font-size:3rem; font-weight:700; color:var(--text-bright); }
+.price-amount .period { font-size:0.9rem; color:var(--text-dim); margin-left:0.3rem; }
+.price-desc { font-size:0.85rem; color:var(--text-dim); margin-bottom:2rem; line-height:1.7; }
+.price-features { list-style:none; display:flex; flex-direction:column; gap:0.9rem; margin-bottom:2.5rem; }
+.price-features li { display:flex; align-items:center; gap:0.8rem; font-size:0.88rem; color:var(--text); }
+.price-features li::before { content:'✦'; color:var(--cyan); font-size:0.6rem; flex-shrink:0; }
+.btn-price {
+  width:100%; padding:0.9rem; border-radius:50px; font-family:var(--font-body);
+  font-weight:700; font-size:0.95rem; cursor:none; transition:var(--transition); letter-spacing:0.5px;
+  border:none; display:block; text-align:center;
+}
+.btn-price-outline { background:transparent; border:1px solid var(--glass-border); color:var(--text); }
+.btn-price-outline:hover { border-color:var(--cyan); color:var(--cyan); }
+.btn-price-fill { background:linear-gradient(135deg,var(--cyan),var(--purple)); color:#fff; box-shadow:0 4px 20px rgba(124,58,255,0.4); }
+.btn-price-fill:hover { box-shadow:0 8px 40px rgba(124,58,255,0.6); transform:translateY(-2px); }
+
+/* ===== TESTIMONIALS ===== */
+#testimonials { padding:7rem 4rem; background:var(--bg-dark); }
+.testi-wrapper { max-width:1200px; margin:0 auto; }
+.testi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.8rem; margin-top:4rem; }
+.testi-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:20px; padding:2rem; backdrop-filter:blur(14px);
+  transition:var(--transition); cursor:none; display:flex; flex-direction:column; gap:1.2rem;
+}
+.testi-card:hover { transform:translateY(-6px); border-color:rgba(0,245,255,0.3); box-shadow:var(--glow-cyan); }
+.testi-stars { display:flex; gap:4px; }
+.star { color:var(--gold); font-size:1rem; }
+.testi-text { font-size:0.92rem; color:var(--text); line-height:1.8; font-style:italic; font-weight:300; flex:1; }
+.testi-text::before { content:'"'; font-size:3rem; color:var(--cyan); opacity:0.3; line-height:0; vertical-align:-1rem; margin-right:0.3rem; }
+.testi-author { display:flex; align-items:center; gap:1rem; }
+.author-avatar {
+  width:48px; height:48px; border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.2rem; flex-shrink:0; font-weight:700; color:#fff;
+  font-family:var(--font-display);
+}
+.author-name { font-weight:600; color:var(--text-bright); font-size:0.9rem; }
+.author-role { font-size:0.8rem; color:var(--text-dim); }
+
+/* ===== CONTACT ===== */
+#contact { padding:7rem 4rem; background:var(--bg-deep); }
+.contact-wrapper { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 1.4fr; gap:5rem; align-items:start; }
+.contact-info { display:flex; flex-direction:column; gap:2rem; }
+.contact-item { display:flex; align-items:flex-start; gap:1.2rem; }
+.contact-icon-wrap {
+  width:48px; height:48px; border-radius:14px;
+  background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(124,58,255,0.1));
+  border:1px solid rgba(0,245,255,0.2); display:flex; align-items:center;
+  justify-content:center; font-size:1.3rem; flex-shrink:0;
+}
+.contact-item-label { font-size:0.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--cyan); margin-bottom:0.3rem; font-family:var(--font-display); }
+.contact-item-value { font-size:0.92rem; color:var(--text); }
+.social-links { display:flex; gap:1rem; margin-top:1rem; }
+.social-link {
+  width:42px; height:42px; border-radius:12px;
+  background:var(--glass); border:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.1rem; cursor:none; transition:var(--transition); text-decoration:none;
+}
+.social-link:hover { border-color:var(--cyan); transform:translateY(-3px); box-shadow:var(--glow-cyan); }
+.contact-form-wrap {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:24px; padding:2.5rem; backdrop-filter:blur(16px);
+}
+.form-title { font-family:var(--font-display); font-size:1.1rem; color:var(--text-bright); margin-bottom:2rem; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.form-group { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.2rem; }
+.form-label { font-size:0.78rem; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); }
+.form-input, .form-select, .form-textarea {
+  background:rgba(255,255,255,0.04); border:1px solid var(--glass-border);
+  border-radius:10px; padding:0.85rem 1.1rem; color:var(--text);
+  font-family:var(--font-body); font-size:0.92rem; transition:var(--transition);
+  outline:none; width:100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color:var(--cyan); box-shadow:0 0 0 2px rgba(0,245,255,0.1); background:rgba(0,245,255,0.03);
+}
+.form-select { cursor:none; -webkit-appearance:none; }
+.form-textarea { resize:vertical; min-height:120px; }
+.form-input::placeholder, .form-textarea::placeholder { color:var(--text-dim); }
+.btn-submit {
+  width:100%; padding:1rem; border-radius:50px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#fff; border:none; font-family:var(--font-body); font-weight:700;
+  font-size:1rem; cursor:none; transition:var(--transition); letter-spacing:0.5px;
+  display:flex; align-items:center; justify-content:center; gap:0.6rem;
+  box-shadow:0 4px 30px rgba(0,245,255,0.25);
+}
+.btn-submit:hover { transform:translateY(-2px); box-shadow:0 8px 40px rgba(0,245,255,0.4); }
+
+/* ===== FOOTER ===== */
+footer {
+  padding:3rem 4rem; background:var(--bg-dark);
+  border-top:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:1.5rem;
+}
+.footer-copy { font-size:0.82rem; color:var(--text-dim); }
+.footer-copy span { color:var(--cyan); }
+.footer-links { display:flex; gap:2rem; }
+.footer-links a { font-size:0.82rem; color:var(--text-dim); text-decoration:none; transition:color 0.3s; }
+.footer-links a:hover { color:var(--cyan); }
+
+/* ===== MOBILE NAV ===== */
+.mobile-menu {
+  position:fixed; inset:0; z-index:999; background:rgba(2,5,16,0.97);
+  backdrop-filter:blur(20px); display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:2.5rem;
+  transform:translateX(100%); transition:transform 0.4s ease;
+}
+.mobile-menu.open { transform:translateX(0); }
+.mobile-menu a { color:var(--text); text-decoration:none; font-family:var(--font-display); font-size:1.4rem; letter-spacing:2px; transition:color 0.3s; }
+.mobile-menu a:hover { color:var(--cyan); }
+.close-btn { position:absolute; top:2rem; right:2rem; font-size:2rem; cursor:none; color:var(--text); }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  nav { padding:1rem 2rem; }
+  .nav-links,.nav-cta { display:none; }
+  .nav-hamburger { display:flex; }
+  #about,.about-grid { grid-template-columns:1fr; }
+  .about-visual { height:300px; }
+  .about-sphere { width:220px; height:220px; }
+  .ring-1 { width:270px;height:270px; }
+  .ring-2 { width:310px;height:310px; }
+  .ring-3 { width:350px;height:350px; }
+  .portfolio-grid { grid-template-columns:1fr 1fr; }
+  .port-1,.port-2,.port-3,.port-4,.port-5 { grid-column:span 6; }
+  .pricing-grid { grid-template-columns:1fr; max-width:420px; margin:4rem auto 0; }
+  .price-card.featured { transform:none; }
+  .contact-wrapper { grid-template-columns:1fr; }
+  #about,#services,#products,#portfolio,#pricing,#testimonials,#contact { padding:5rem 2rem; }
+}
+@media(max-width:640px){
+  nav { padding:1rem; }
+  .hero-stats { gap:2rem; }
+  .form-row { grid-template-columns:1fr; }
+  footer { flex-direction:column; text-align:center; padding:2rem 1.5rem; }
+  .portfolio-grid { display:flex; flex-direction:column; }
+  .port-item { width:100%; }
+}
+
+/* ===== TECH LINE ANIMATION ===== */
+.tech-grid-bg {
+  position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+.tech-grid-bg::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(0,245,255,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,245,255,0.04) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+
+/* ===== LOADING SCREEN ===== */
+#loader {
+  position:fixed; inset:0; z-index:9999; background:var(--bg-deep);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem;
+  transition:opacity 0.6s, visibility 0.6s;
+}
+#loader.hidden { opacity:0; visibility:hidden; }
+.loader-logo { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; }
+.loader-bar { width:200px; height:2px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
+.loader-fill { height:100%; width:0; background:linear-gradient(90deg,var(--cyan),var(--purple)); border-radius:2px; transition:width 0.1s; }
+.loader-text { font-size:0.75rem; color:var(--text-dim); letter-spacing:3px; text-transform:uppercase; }
+
+/* ===== GLOW EFFECT ON CARDS HOVER ===== */
+@keyframes shimmer {
+  0%{background-position:-200% center}
+  100%{background-position:200% center}
+}
+
+/* ===== DETAIL PAGE ===== */
+#detail-page {
+  position:fixed; inset:0; z-index:2000;
+  background:var(--bg-deep); overflow-y:auto;
+  transform:translateX(100%); transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  visibility:hidden;
+}
+#detail-page.open { transform:translateX(0); visibility:visible; }
+.detail-back-bar {
+  position:sticky; top:0; z-index:10;
+  background:rgba(2,5,16,0.85); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--glass-border);
+  padding:1rem 3rem; display:flex; align-items:center; gap:1.5rem;
+}
+.detail-back-btn {
+  display:inline-flex; align-items:center; gap:0.6rem;
+  background:var(--glass); border:1px solid var(--glass-border);
+  color:var(--text); padding:0.55rem 1.2rem; border-radius:50px;
+  font-family:var(--font-body); font-size:0.85rem; font-weight:600;
+  cursor:none; transition:var(--transition); letter-spacing:0.3px;
+}
+.detail-back-btn:hover { border-color:var(--cyan); color:var(--cyan); transform:translateX(-3px); }
+.detail-breadcrumb { font-size:0.8rem; color:var(--text-dim); }
+.detail-breadcrumb span { color:var(--cyan); }
+
+.detail-hero {
+  padding:5rem 3rem 3rem;
+  background:radial-gradient(ellipse 70% 60% at 50% 0%, rgba(124,58,255,0.2) 0%, transparent 60%),
+             var(--bg-deep);
+  text-align:center; position:relative; overflow:hidden;
+}
+.detail-hero-icon {
+  width:90px; height:90px; border-radius:24px; margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,rgba(0,245,255,0.15),rgba(124,58,255,0.2));
+  border:1px solid rgba(0,245,255,0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:3rem; box-shadow:0 0 40px rgba(0,245,255,0.15);
+  animation: iconPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes iconPop { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.detail-hero-tag {
+  display:inline-block; font-size:0.72rem; font-weight:700; letter-spacing:3px;
+  text-transform:uppercase; color:var(--cyan); margin-bottom:0.8rem;
+  font-family:var(--font-display); background:rgba(0,245,255,0.08);
+  border:1px solid rgba(0,245,255,0.2); padding:0.3rem 1rem; border-radius:50px;
+}
+.detail-hero-title {
+  font-family:var(--font-display); font-size:clamp(2rem,5vw,4rem);
+  font-weight:900; color:var(--text-bright); line-height:1.1; margin-bottom:1rem;
+}
+.detail-hero-title span { background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.detail-hero-sub { font-size:1.1rem; color:var(--text-dim); max-width:680px; margin:0 auto; line-height:1.8; font-weight:300; }
+.detail-hero-stats {
+  display:flex; gap:3rem; flex-wrap:wrap; justify-content:center; margin-top:3rem;
+}
+.detail-stat { text-align:center; }
+.detail-stat-num { font-family:var(--font-display); font-size:1.8rem; font-weight:700; background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.detail-stat-label { font-size:0.75rem; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; }
+
+.detail-body { max-width:1100px; margin:0 auto; padding:4rem 3rem; }
+.detail-section { margin-bottom:4rem; }
+.detail-section-title {
+  font-family:var(--font-display); font-size:1.4rem; color:var(--text-bright);
+  margin-bottom:2rem; display:flex; align-items:center; gap:0.8rem;
+}
+.detail-section-title::before { content:''; display:block; width:4px; height:1.4rem; background:linear-gradient(var(--cyan),var(--purple)); border-radius:2px; }
+
+.features-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.2rem; }
+.feature-card {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:16px; padding:1.5rem; backdrop-filter:blur(14px);
+  transition:var(--transition);
+}
+.feature-card:hover { border-color:rgba(0,245,255,0.4); transform:translateY(-4px); box-shadow:var(--glow-cyan); }
+.feature-card-icon { font-size:1.8rem; margin-bottom:0.8rem; }
+.feature-card h4 { font-family:var(--font-display); font-size:0.88rem; color:var(--cyan); margin-bottom:0.5rem; letter-spacing:0.5px; }
+.feature-card p { font-size:0.85rem; color:var(--text-dim); line-height:1.7; }
+
+.process-list { display:flex; flex-direction:column; gap:0; }
+.process-step {
+  display:flex; gap:2rem; align-items:flex-start; position:relative;
+  padding-bottom:2rem;
+}
+.process-step:last-child { padding-bottom:0; }
+.process-step:not(:last-child)::after {
+  content:''; position:absolute; left:1.5rem; top:3.5rem; bottom:0;
+  width:2px; background:linear-gradient(var(--cyan),transparent);
+}
+.step-num {
+  width:3rem; height:3rem; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-size:0.9rem; font-weight:700; color:#fff;
+}
+.step-content h4 { font-family:var(--font-display); font-size:0.95rem; color:var(--text-bright); margin-bottom:0.4rem; }
+.step-content p { font-size:0.88rem; color:var(--text-dim); line-height:1.7; }
+
+.tech-pills { display:flex; flex-wrap:wrap; gap:0.8rem; }
+.tech-pill {
+  background:var(--glass); border:1px solid var(--glass-border);
+  border-radius:50px; padding:0.5rem 1.2rem;
+  font-size:0.82rem; font-weight:600; color:var(--text);
+  transition:var(--transition);
+}
+.tech-pill:hover { border-color:var(--cyan); color:var(--cyan); }
+
+.detail-cta-box {
+  background:linear-gradient(135deg,rgba(0,245,255,0.08),rgba(124,58,255,0.12));
+  border:1px solid rgba(0,245,255,0.25); border-radius:24px;
+  padding:3rem; text-align:center;
+}
+.detail-cta-box h3 { font-family:var(--font-display); font-size:1.5rem; color:var(--text-bright); margin-bottom:0.8rem; }
+.detail-cta-box p { color:var(--text-dim); margin-bottom:2rem; font-size:0.95rem; }
+.detail-cta-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+
+.why-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.2rem; }
+.why-card {
+  background:var(--glass); border:1px solid var(--glass-border); border-radius:16px;
+  padding:1.5rem; text-align:center; transition:var(--transition);
+}
+.why-card:hover { border-color:var(--purple); box-shadow:var(--glow-purple); transform:translateY(-4px); }
+.why-icon { font-size:2rem; margin-bottom:0.8rem; }
+.why-card h4 { font-size:0.88rem; font-weight:700; color:var(--text-bright); margin-bottom:0.4rem; }
+.why-card p { font-size:0.8rem; color:var(--text-dim); line-height:1.6; }
+
+@media(max-width:768px){
+  .detail-back-bar { padding:1rem 1.5rem; }
+  .detail-hero { padding:4rem 1.5rem 2rem; }
+  .detail-body { padding:2rem 1.5rem; }
+  .detail-hero-stats { gap:1.5rem; }
+}
+
+/* clickable cards */
+.service-card, .product-card { cursor:none; }
+.service-card:hover, .product-card:hover { cursor:none; }
+
+
+#admin-download-btn {
+  display:none;
+  position:fixed;
+  bottom:2rem;
+  right:2rem;
+  z-index:99999;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  color:#fff;
+  border:none;
+  padding:0.8rem 1.5rem;
+  border-radius:50px;
+  font-family:var(--font-body);
+  font-weight:700;
+  font-size:0.9rem;
+  cursor:pointer;
+  box-shadow:0 4px 30px rgba(0,245,255,0.4);
+}
+#admin-download-btn:hover { transform:translateY(-2px); box-shadow:0 8px 40px rgba(0,245,255,0.6); }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">SMRITS SOFTWARE</div>
+  <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+  <div class="loader-text">Initializing Systems...</div>
+</div>
+
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(2,5,16,0.97);display:none;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;">
+  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(0,245,255,0.3);border-radius:24px;padding:3rem;text-align:center;max-width:400px;width:90%;">
+    <div style="font-family:'Orbitron',monospace;font-size:1.2rem;color:#00f5ff;margin-bottom:0.5rem;">Admin Panel</div>
+    <div id="admin-count" style="font-size:0.9rem;color:#8892b0;margin-bottom:2rem;"></div>
+    <button onclick="downloadSubmissions()" style="width:100%;padding:1rem;border-radius:50px;background:linear-gradient(135deg,#00f5ff,#7c3aff);color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:1rem;">📥 Download Excel</button>
+    <button onclick="closeAdmin()" style="width:100%;padding:1rem;border-radius:50px;background:transparent;color:#8892b0;border:1px solid rgba(255,255,255,0.12);font-size:0.9rem;cursor:pointer;">Close</button>
+  </div>
+</div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <span class="close-btn" id="close-menu">✕</span>
+  <a href="#home" onclick="closeMobileMenu()">Home</a>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="#services" onclick="closeMobileMenu()">Services</a>
+  <a href="#products" onclick="closeMobileMenu()">Products</a>
+  <a href="#portfolio" onclick="closeMobileMenu()">Portfolio</a>
+  <a href="#pricing" onclick="closeMobileMenu()">Pricing</a>
+  <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+</div>
+
+
+
+<!-- NAVIGATION -->
+<nav id="navbar">
+  <a href="#home" class="nav-logo">SMRITS<span>SOFTWARE</span> SERVICE</a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Started</button>
+  <div class="nav-hamburger" id="hamburger" onclick="openMobileMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="home">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="tech-grid-bg"></div>
+  <canvas id="hero-canvas"></canvas>
+
+  <div class="hero-badge">🚀 &nbsp; Next Generation Software Technology</div>
+
+  <h1 class="hero-title">
+    <span class="line1">Building the Future</span>
+    <span class="line2">with AI & Intelligent Design</span>
+  </h1>
+
+  <p class="hero-sub">We craft cutting-edge AI systems, stunning digital experiences, and intelligent automation tools that redefine what's possible for global businesses.</p>
+
+  <div class="hero-btns">
+    <a href="#contact" class="btn-primary">🚀 Get Started</a>
+    <a href="#services" class="btn-secondary">⚡ View Services</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" data-target="150">0</div>
+      <div class="stat-label">Projects Delivered</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-target="80">0</div>
+      <div class="stat-label">Global Clients</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-target="99">0</div>
+      <div class="stat-label">% Satisfaction</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-target="12">0</div>
+      <div class="stat-label">AI Products</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-visual reveal-left">
+      <div class="about-ring ring-1"></div>
+      <div class="about-ring ring-2"></div>
+      <div class="about-ring ring-3"></div>
+      <div class="about-sphere"></div>
+      <div class="floating-icon fi-1">🧠</div>
+      <div class="floating-icon fi-2">⚡</div>
+      <div class="floating-icon fi-3">🔮</div>
+      <div class="floating-icon fi-4">🌐</div>
+    </div>
+    <div class="about-content reveal-right">
+      <div>
+        <div class="section-tag">About Us</div>
+        <h2 class="section-title">Pioneering <span>Intelligent</span> Solutions</h2>
+        <p class="section-sub" style="margin-bottom:2rem">Founded in 2021, Smrits Software Service is a forward-thinking technology company at the intersection of artificial intelligence, design, and engineering. We build the tools that tomorrow's companies depend on today.</p>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon">🎯</div>
+        <div>
+          <h3>Our Mission</h3>
+          <p>Democratize cutting-edge AI and empower businesses of all sizes to harness the transformative power of intelligent automation and machine learning.</p>
+        </div>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon">🔭</div>
+        <div>
+          <h3>Our Vision</h3>
+          <p>To become the global standard for AI-driven product development, reaching 500+ enterprise clients across 40 countries by 2027.</p>
+        </div>
+      </div>
+      <div class="about-card reveal">
+        <div class="about-card-icon">🏆</div>
+        <div>
+          <h3>Founder Story</h3>
+          <p>Born from a passion for AI research and beautiful design, our founding team of engineers and designers left top-tier tech firms to build something unprecedented.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== SERVICES ===== -->
+<section id="services">
+  <div class="services-wrapper">
+    <div class="section-center reveal">
+      <div class="section-tag">What We Do</div>
+      <h2 class="section-title">World-Class <span>Services</span></h2>
+      <p class="section-sub">From AI research to pixel-perfect design — we deliver end-to-end solutions built for scale.</p>
+    </div>
+
+    <div style="margin-top:4rem">
+      <!-- UI/UX -->
+      <div class="service-category reveal">
+        <div class="service-cat-header">
+          <span class="cat-icon">🎨</span>
+          <span class="cat-title">UI/UX Design Services</span>
+          <div class="cat-line"></div>
+        </div>
+        <div class="service-grid">
+          <div class="service-card" onclick="openDetail('saas-dashboard')"><span class="service-card-icon">📊</span><h4>SaaS Dashboard Design</h4><p>Intuitive, data-rich dashboards that users love.</p></div>
+          <div class="service-card" onclick="openDetail('mobile-app-ui')"><span class="service-card-icon">📱</span><h4>Mobile App UI</h4><p>Native & cross-platform mobile experiences.</p></div>
+          <div class="service-card" onclick="openDetail('website-design')"><span class="service-card-icon">🌐</span><h4>Website Design</h4><p>Premium websites that convert and inspire.</p></div>
+          <div class="service-card" onclick="openDetail('product-prototyping')"><span class="service-card-icon">⚙️</span><h4>Product Prototyping</h4><p>Rapid prototypes from wireframe to hi-fi.</p></div>
+          <div class="service-card" onclick="openDetail('design-systems')"><span class="service-card-icon">🎭</span><h4>Design Systems</h4><p>Scalable, consistent component libraries.</p></div>
+        </div>
+      </div>
+      <!-- AI -->
+      <div class="service-category reveal">
+        <div class="service-cat-header">
+          <span class="cat-icon">🤖</span>
+          <span class="cat-title">AI Development Services</span>
+          <div class="cat-line"></div>
+        </div>
+        <div class="service-grid">
+          <div class="service-card" onclick="openDetail('machine-learning')"><span class="service-card-icon">🧬</span><h4>Machine Learning</h4><p>Custom ML models trained on your data.</p></div>
+          <div class="service-card" onclick="openDetail('computer-vision')"><span class="service-card-icon">👁️</span><h4>Computer Vision</h4><p>Real-time image & video intelligence.</p></div>
+          <div class="service-card" onclick="openDetail('ai-chatbots')"><span class="service-card-icon">💬</span><h4>AI Chatbots</h4><p>Conversational AI that understands context.</p></div>
+          <div class="service-card" onclick="openDetail('ai-automation')"><span class="service-card-icon">🔧</span><h4>AI Automation</h4><p>Intelligent tools that replace manual work.</p></div>
+          <div class="service-card" onclick="openDetail('predictive-analytics')"><span class="service-card-icon">📈</span><h4>Predictive Analytics</h4><p>Forecast trends before they happen.</p></div>
+        </div>
+      </div>
+      <!-- Web Dev -->
+      <div class="service-category reveal">
+        <div class="service-cat-header">
+          <span class="cat-icon">💻</span>
+          <span class="cat-title">Web Development</span>
+          <div class="cat-line"></div>
+        </div>
+        <div class="service-grid">
+          <div class="service-card" onclick="openDetail('saas-platforms')"><span class="service-card-icon">☁️</span><h4>SaaS Platforms</h4><p>Full-stack cloud applications at any scale.</p></div>
+          <div class="service-card" onclick="openDetail('startup-websites')"><span class="service-card-icon">🚀</span><h4>Startup Websites</h4><p>High-converting sites that tell your story.</p></div>
+          <div class="service-card" onclick="openDetail('enterprise-apps')"><span class="service-card-icon">🏢</span><h4>Enterprise Apps</h4><p>Mission-critical systems built to last.</p></div>
+          <div class="service-card" onclick="openDetail('admin-dashboards')"><span class="service-card-icon">🖥️</span><h4>Admin Dashboards</h4><p>Powerful internal tools and analytics panels.</p></div>
+        </div>
+      </div>
+      <!-- Automation -->
+      <div class="service-category reveal">
+        <div class="service-cat-header">
+          <span class="cat-icon">⚡</span>
+          <span class="cat-title">Automation Solutions</span>
+          <div class="cat-line"></div>
+        </div>
+        <div class="service-grid">
+          <div class="service-card" onclick="openDetail('business-automation')"><span class="service-card-icon">🏭</span><h4>Business Automation</h4><p>End-to-end process automation systems.</p></div>
+          <div class="service-card" onclick="openDetail('ai-workflow')"><span class="service-card-icon">🔄</span><h4>AI Workflow</h4><p>Smart pipelines that learn and adapt.</p></div>
+          <div class="service-card" onclick="openDetail('data-processing')"><span class="service-card-icon">🗄️</span><h4>Data Processing</h4><p>ETL pipelines and real-time data streams.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== PRODUCTS ===== -->
+<section id="products">
+  <div class="products-wrapper">
+    <div class="section-center reveal">
+      <div class="section-tag">AI Products</div>
+      <h2 class="section-title">Our <span>AI-Powered</span> Suite</h2>
+      <p class="section-sub">Production-ready AI tools you can deploy in minutes. Built for scale, designed for humans.</p>
+    </div>
+    <div class="products-grid">
+      <div class="product-card reveal" onclick="openDetail('resume-ai')">
+        <span class="product-badge">New</span>
+        <div class="product-icon-wrap">📄</div>
+        <h3>Resume AI Generator</h3>
+        <p>Craft ATS-optimized, professionally tailored resumes in seconds using GPT-powered intelligence and dynamic templates.</p>
+        <button class="btn-demo">▶ Live Demo</button>
+      </div>
+      <div class="product-card reveal" onclick="openDetail('content-generator')">
+        <span class="product-badge">Popular</span>
+        <div class="product-icon-wrap">✍️</div>
+        <h3>AI Content Generator</h3>
+        <p>Generate blog posts, ad copy, emails and social content at scale — brand-aware, SEO-ready, zero fluff.</p>
+        <button class="btn-demo">▶ Live Demo</button>
+      </div>
+      <div class="product-card reveal" onclick="openDetail('linkedin-generator')">
+        <div class="product-icon-wrap">💼</div>
+        <h3>LinkedIn Post Generator</h3>
+        <p>Create viral LinkedIn posts with hooks that stop the scroll. Trained on thousands of high-engagement posts.</p>
+        <button class="btn-demo">▶ Live Demo</button>
+      </div>
+      <div class="product-card reveal" onclick="openDetail('chatbot-builder')">
+        <span class="product-badge">Beta</span>
+        <div class="product-icon-wrap">🤖</div>
+        <h3>AI Chatbot Builder</h3>
+        <p>Build custom AI chatbots with your own knowledge base. Deploy to web, WhatsApp, or Slack in one click.</p>
+        <button class="btn-demo">▶ Live Demo</button>
+      </div>
+      <div class="product-card reveal" onclick="openDetail('business-analytics')">
+        <div class="product-icon-wrap">📊</div>
+        <h3>Business Analytics AI</h3>
+        <p>Natural language BI — ask your data anything. Get instant charts, forecasts, and executive summaries.</p>
+        <button class="btn-demo">▶ Live Demo</button>
+      </div>
+      <div class="product-card reveal" onclick="openDetail('blood-group-ai')">
+        <span class="product-badge">Research</span>
+        <div class="product-icon-wrap">🩸</div>
+        <h3>Blood Group Prediction AI</h3>
+        <p>Advanced ML model predicting blood group from non-invasive biometric data. Accuracy rate of 97.4% in trials.</p>
+        <button class="btn-demo">▶ Live Demo</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== PORTFOLIO ===== -->
+<section id="portfolio">
+  <div class="portfolio-wrapper">
+    <div class="section-center reveal">
+      <div class="section-tag">Portfolio</div>
+      <h2 class="section-title">Our <span>Work</span> in Action</h2>
+      <p class="section-sub">A curated showcase of projects where intelligence meets beautiful design.</p>
+    </div>
+    <div class="portfolio-grid">
+      <div class="port-item port-1 reveal">
+        <div class="port-visual">
+          <div class="port-visual-bg pv-1"></div>
+          <div class="grid-lines"></div>
+          <span class="emoji-icon">📊</span>
+        </div>
+        <div class="port-info">
+          <h4>NeuralDash — AI Analytics Dashboard</h4>
+          <p>Real-time ML model monitoring with 3D data visualization for Fortune 500 fintech client.</p>
+          <div class="port-tags"><span class="port-tag">React</span><span class="port-tag">D3.js</span><span class="port-tag">ML Ops</span></div>
+        </div>
+      </div>
+      <div class="port-item port-2 reveal">
+        <div class="port-visual">
+          <div class="port-visual-bg pv-2"></div>
+          <div class="grid-lines"></div>
+          <span class="emoji-icon">☁️</span>
+        </div>
+        <div class="port-info">
+          <h4>CloudScale SaaS Platform</h4>
+          <p>Full-stack multi-tenant SaaS with AI-driven onboarding for a 10,000-user B2B startup.</p>
+          <div class="port-tags"><span class="port-tag">Next.js</span><span class="port-tag">AWS</span><span class="port-tag">AI</span></div>
+        </div>
+      </div>
+      <div class="port-item port-3 reveal">
+        <div class="port-visual" style="height:220px">
+          <div class="port-visual-bg pv-3"></div>
+          <div class="grid-lines"></div>
+          <span class="emoji-icon">🚀</span>
+        </div>
+        <div class="port-info">
+          <h4>LaunchPad Startup Website</h4>
+          <p>YC-backed startup landing page with $2M+ in conversions tracked in week 1.</p>
+          <div class="port-tags"><span class="port-tag">Webflow</span><span class="port-tag">GSAP</span></div>
+        </div>
+      </div>
+      <div class="port-item port-4 reveal">
+        <div class="port-visual" style="height:220px">
+          <div class="port-visual-bg pv-4"></div>
+          <div class="grid-lines"></div>
+          <span class="emoji-icon">📱</span>
+        </div>
+        <div class="port-info">
+          <h4>MindFlow Mobile App</h4>
+          <p>iOS & Android mental wellness app with AI journaling and mood prediction.</p>
+          <div class="port-tags"><span class="port-tag">React Native</span><span class="port-tag">AI</span></div>
+        </div>
+      </div>
+      <div class="port-item port-5 reveal">
+        <div class="port-visual" style="height:220px">
+          <div class="port-visual-bg pv-5"></div>
+          <div class="grid-lines"></div>
+          <span class="emoji-icon">🔮</span>
+        </div>
+        <div class="port-info">
+          <h4>OracleVision Computer Vision</h4>
+          <p>Real-time defect detection system deployed on manufacturing assembly lines.</p>
+          <div class="port-tags"><span class="port-tag">Python</span><span class="port-tag">TensorFlow</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== PRICING ===== -->
+<section id="pricing">
+  <div class="pricing-wrapper">
+    <div class="section-center reveal">
+      <div class="section-tag">Pricing</div>
+      <h2 class="section-title">Transparent <span>Pricing</span></h2>
+      <p class="section-sub">No hidden fees. No surprises. Just world-class work at clear, fair rates.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- Starter -->
+      <div class="price-card reveal">
+        <div class="price-tier">Starter</div>
+        <div class="price-name">Launch Pack</div>
+        <div class="price-amount"><span class="amount">$999</span><span class="period">/project</span></div>
+        <div class="price-desc">Perfect for startups and solo founders looking to establish their digital presence.</div>
+        <ul class="price-features">
+          <li>Landing page design & development</li>
+          <li>Basic UI/UX design system</li>
+          <li>Mobile-responsive layout</li>
+          <li>3 design revisions</li>
+          <li>SEO-optimized structure</li>
+          <li>30-day support</li>
+        </ul>
+        <button class="btn-price btn-price-outline">Get Started →</button>
+      </div>
+      <!-- Pro -->
+      <div class="price-card featured reveal">
+        <div class="price-popular">Most Popular</div>
+        <div class="price-tier">Professional</div>
+        <div class="price-name">Growth Pack</div>
+        <div class="price-amount"><span class="amount">$4,999</span><span class="period">/project</span></div>
+        <div class="price-desc">The full-stack solution for scaling startups and product teams ready to move fast.</div>
+        <ul class="price-features">
+          <li>Full UI/UX design system</li>
+          <li>SaaS platform development</li>
+          <li>AI chatbot integration</li>
+          <li>Admin dashboard & analytics</li>
+          <li>Unlimited revisions</li>
+          <li>3-month priority support</li>
+          <li>Performance optimization</li>
+        </ul>
+        <button class="btn-price btn-price-fill">Get Started →</button>
+      </div>
+      <!-- Enterprise -->
+      <div class="price-card reveal">
+        <div class="price-tier">Enterprise</div>
+        <div class="price-name">AI Suite Pack</div>
+        <div class="price-amount"><span class="amount">Custom</span></div>
+        <div class="price-desc">End-to-end AI product development for enterprise teams with complex requirements.</div>
+        <ul class="price-features">
+          <li>Custom AI model development</li>
+          <li>Full SaaS platform + mobile app</li>
+          <li>ML pipeline & data engineering</li>
+          <li>Computer vision or NLP systems</li>
+          <li>Dedicated engineering team</li>
+          <li>12-month SLA support</li>
+          <li>IP ownership transfer</li>
+        </ul>
+        <button class="btn-price btn-price-outline">Contact Sales →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section id="testimonials">
+  <div class="testi-wrapper">
+    <div class="section-center reveal">
+      <div class="section-tag">Testimonials</div>
+      <h2 class="section-title">Trusted by <span>Innovators</span></h2>
+      <p class="section-sub">Don't take our word for it — hear from the companies we've helped transform.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Smrits Software Service delivered an AI dashboard that completely transformed how our analysts interpret data. The quality is simply extraordinary — nothing short of world-class.</p>
+        <div class="testi-author">
+          <div class="author-avatar">SA</div>
+          <div>
+            <div class="author-name">Sarah Anderson</div>
+            <div class="author-role">CTO, FinVault Technologies</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">The team built our entire SaaS platform from scratch in 8 weeks. The AI-powered features have directly contributed to 300% user growth in Q1. Phenomenal work.</p>
+        <div class="testi-author">
+          <div class="author-avatar">MK</div>
+          <div>
+            <div class="author-name">Michael Krishnan</div>
+            <div class="author-role">Founder, DataLoop AI</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Working with Smrits Software Service felt like having a Silicon Valley product team at startup prices. The UI/UX quality rivals Stripe and Linear. Absolutely stunning results.</p>
+        <div class="testi-author">
+          <div class="author-avatar">EL</div>
+          <div>
+            <div class="author-name">Emma Laurent</div>
+            <div class="author-role">Product Director, NovaBridge</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">Their computer vision system cut our defect rate by 87%. ROI in 3 months. I've worked with dozens of tech vendors — Smrits Software Service is in a different league entirely.</p>
+        <div class="testi-author">
+          <div class="author-avatar">RJ</div>
+          <div>
+            <div class="author-name">Raj Patel</div>
+            <div class="author-role">Head of Engineering, ManuTech</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">The chatbot they built handles 4,000+ customer queries daily with 94% satisfaction. Our support costs dropped 60%. The AI feels genuinely intelligent, not scripted.</p>
+        <div class="testi-author">
+          <div class="author-avatar">LC</div>
+          <div>
+            <div class="author-name">Lena Chen</div>
+            <div class="author-role">COO, Shopify Partner, RetailEdge</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">They redesigned our entire design system and trained our team on it. Delivery speed increased 4x. This is what happens when you combine AI expertise with world-class design thinking.</p>
+        <div class="testi-author">
+          <div class="author-avatar">AT</div>
+          <div>
+            <div class="author-name">Arjun Tiwari</div>
+            <div class="author-role">Design Lead, ScaleUp Labs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gradient-divider"></div>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+  <div style="max-width:1100px;margin:0 auto;text-align:center;margin-bottom:4rem" class="reveal">
+    <div class="section-tag">Contact Us</div>
+    <h2 class="section-title">Ready to Build <span>Something Great?</span></h2>
+    <p class="section-sub" style="margin:0 auto">Tell us about your vision. We'll respond within 24 hours with a tailored proposal.</p>
+  </div>
+  <div class="contact-wrapper">
+    <div class="contact-info reveal-left">
+      <div class="contact-item">
+        <div class="contact-icon-wrap">📧</div>
+        <div>
+          <div class="contact-item-label">Email</div>
+          <div class="contact-item-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="264e434a4a4966554b544f52555549405251475443554354504f45430845494b">[email&#160;protected]</a></div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon-wrap">⏰</div>
+        <div>
+          <div class="contact-item-label">Response Time</div>
+          <div class="contact-item-value">Within 24 hours — guaranteed</div>
+        </div>
+      </div>
+      <div>
+        <div class="contact-item-label" style="margin-bottom:0.8rem">Follow Us</div>
+        <div class="social-links">
+          <a class="social-link" href="#" title="Twitter">𝕏</a>
+          <a class="social-link" href="#" title="LinkedIn">in</a>
+          <a class="social-link" href="#" title="GitHub">⌨</a>
+          <a class="social-link" href="#" title="Instagram">📸</a>
+          <a class="social-link" href="#" title="YouTube">▶</a>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form-wrap reveal-right">
+      <div class="form-title">Send a Message</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" placeholder="Smith">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" placeholder="john@company.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service Interest</label>
+        <select class="form-select">
+          <option value="" style="background:#060d1f">Select a service...</option>
+          <option style="background:#060d1f">UI/UX Design</option>
+          <option style="background:#060d1f">AI Development</option>
+          <option style="background:#060d1f">Web Development</option>
+          <option style="background:#060d1f">Automation Solutions</option>
+          <option style="background:#060d1f">AI Product Demo</option>
+          <option style="background:#060d1f">Enterprise Package</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget Range</label>
+        <select class="form-select">
+          <option value="" style="background:#060d1f">Select budget...</option>
+          <option style="background:#060d1f">Under $5,000</option>
+          <option style="background:#060d1f">$5,000 – $15,000</option>
+          <option style="background:#060d1f">$15,000 – $50,000</option>
+          <option style="background:#060d1f">$50,000+</option>
+          <option style="background:#060d1f">Enterprise / Custom</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Project Details</label>
+        <textarea class="form-textarea" placeholder="Tell us about your project, goals, timeline, and any specific requirements..."></textarea>
+      </div>
+      <button class="btn-submit" onclick="handleSubmit(this)">
+        <span id="submit-text">🚀 Send Message</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DETAIL PAGE ===== -->
+<div id="detail-page">
+  <div class="detail-back-bar">
+    <button class="detail-back-btn" onclick="closeDetail()">← Back</button>
+    <div class="detail-breadcrumb">Smrits Software Service &nbsp;/&nbsp; <span id="detail-breadcrumb-text">Service</span></div>
+  </div>
+  <div id="detail-content"></div>
+</div>
+
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ===== LOADER =====
+const loaderFill = document.getElementById('loader-fill');
+const loader = document.getElementById('loader');
+let progress = 0;
+const loadInterval = setInterval(() => {
+  progress += Math.random() * 15;
+  if (progress >= 100) { progress = 100; clearInterval(loadInterval); setTimeout(() => { loader.classList.add('hidden'); }, 400); }
+  loaderFill.style.width = progress + '%';
+}, 120);
+
+// ===== CURSOR =====
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{ mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+function animRing() { rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+animRing();
+document.querySelectorAll('button,a,[onclick]').forEach(el=>{ el.addEventListener('mouseenter',()=>{ cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='50px'; ring.style.height='50px'; }); el.addEventListener('mouseleave',()=>{ cursor.style.width='12px'; cursor.style.height='12px'; ring.style.width='36px'; ring.style.height='36px'; }); });
+
+// ===== NAVBAR SCROLL =====
+window.addEventListener('scroll',()=>{ document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50); });
+
+// ===== MOBILE MENU =====
+function openMobileMenu() { document.getElementById('mobile-menu').classList.add('open'); }
+function closeMobileMenu() { document.getElementById('mobile-menu').classList.remove('open'); }
+document.getElementById('close-menu').addEventListener('click', closeMobileMenu);
+
+// ===== HERO CANVAS PARTICLES =====
+const canvas = document.getElementById('hero-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles=[], lines=[];
+function resize() { W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random()*W; this.y = Math.random()*H;
+    this.vx = (Math.random()-0.5)*0.4; this.vy = (Math.random()-0.5)*0.4;
+    this.r = Math.random()*1.8+0.4; this.alpha = Math.random()*0.5+0.1;
+    this.color = Math.random()<0.5 ? '0,245,255' : '124,58,255';
+  }
+  update() {
+    this.x+=this.vx; this.y+=this.vy;
+    if(this.x<0||this.x>W||this.y<0||this.y>H) this.reset();
+  }
+  draw() {
+    ctx.save(); ctx.globalAlpha=this.alpha;
+    ctx.fillStyle=`rgba(${this.color},1)`;
+    ctx.shadowColor=`rgba(${this.color},0.8)`; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+for(let i=0;i<120;i++) particles.push(new Particle());
+function drawConnections() {
+  for(let i=0;i<particles.length;i++) {
+    for(let j=i+1;j<particles.length;j++) {
+      const dx=particles[i].x-particles[j].x; const dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120) {
+        const alpha=(1-dist/120)*0.18;
+        ctx.save(); ctx.globalAlpha=alpha;
+        ctx.strokeStyle=`rgba(0,245,255,1)`; ctx.lineWidth=0.6;
+        ctx.beginPath(); ctx.moveTo(particles[i].x,particles[i].y); ctx.lineTo(particles[j].x,particles[j].y); ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+}
+function animCanvas() {
+  ctx.clearRect(0,0,W,H);
+  drawConnections();
+  particles.forEach(p=>{ p.update(); p.draw(); });
+  requestAnimationFrame(animCanvas);
+}
+animCanvas();
+
+// ===== SCROLL REVEAL =====
+const revealEls = document.querySelectorAll('.reveal,.reveal-left,.reveal-right');
+const io = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } }); }, { threshold:0.1 });
+revealEls.forEach(el=>io.observe(el));
+
+// ===== COUNTER ANIMATION =====
+function animateCounter(el,target) {
+  let current=0; const step=target/60;
+  const id=setInterval(()=>{
+    current+=step;
+    if(current>=target) { current=target; clearInterval(id); }
+    el.textContent = Math.floor(current) + (el.dataset.suffix||'');
+  }, 25);
+}
+const counterIo = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) {
+    document.querySelectorAll('.stat-num').forEach(el=>animateCounter(el,parseInt(el.dataset.target)));
+    counterIo.disconnect();
+  }});
+},{threshold:0.3});
+counterIo.observe(document.querySelector('.hero-stats'));
+
+// ===== FORM SUBMIT =====
+function handleSubmit(btn) {
+  const formWrap = btn.closest('.contact-form-wrap');
+  const inputs   = formWrap.querySelectorAll('input, select, textarea');
+  const firstName = inputs[0].value.trim();
+  const lastName  = inputs[1].value.trim();
+  const email     = inputs[2].value.trim();
+  const service   = inputs[3].value.trim();
+  const budget    = inputs[4].value.trim();
+  const message   = inputs[5].value.trim();
+
+  if (!firstName || !email) {
+    alert('Please enter at least your First Name and Email.');
+    return;
+  }
+
+  const txt = document.getElementById('submit-text');
+  txt.textContent = '⏳ Sending...';
+  btn.disabled = true;
+
+  // Save to localStorage so YOU can view all submissions anytime
+  const KEY = 'smrits_submissions';
+  const list = JSON.parse(localStorage.getItem(KEY) || '[]');
+  list.push({
+    'Submitted At'    : new Date().toLocaleString(),
+    'First Name'      : firstName,
+    'Last Name'       : lastName,
+    'Email'           : email,
+    'Service Interest': service,
+    'Budget Range'    : budget,
+    'Message'         : message
+  });
+  localStorage.setItem(KEY, JSON.stringify(list));
+
+  setTimeout(() => {
+    txt.textContent = "✅ Message Sent! We'll be in touch soon.";
+    btn.style.background = 'linear-gradient(135deg,#00c853,#00897b)';
+    inputs.forEach(i => { if(i.tagName !== 'SELECT') i.value = ''; });
+    btn.disabled = false;
+  }, 1500);
+}
+
+// Call this in browser console anytime to download all submissions as Excel
+function downloadSubmissions() {
+  const KEY = 'smrits_submissions';
+  const data = JSON.parse(localStorage.getItem(KEY) || '[]');
+  if (!data.length) { alert('No submissions yet.'); return; }
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:32},{wch:22},{wch:20},{wch:52}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Details of Users');
+  XLSX.writeFile(wb, 'Details_of_Users.xlsx');
+}
+
+// ===== DETAIL PAGE DATA =====
+const detailData = {
+  'website-design': {
+    tag:'UI/UX Design', icon:'🌐', title:'Website <span>Design</span>',
+    sub:'We design premium, high-converting websites that don\'t just look stunning — they drive real business results. Every pixel is intentional, every interaction purposeful.',
+    stats:[{num:'200+',label:'Sites Delivered'},{num:'3.5x',label:'Avg Conversion Lift'},{num:'98%',label:'Client Satisfaction'},{num:'7 Days',label:'First Draft'}],
+    features:[
+      {icon:'🎯',title:'Conversion-First Design',desc:'Every layout decision is backed by UX psychology and A/B data to maximize leads, sign-ups, and sales.'},
+      {icon:'📱',title:'Mobile-First Responsive',desc:'Pixel-perfect across all screen sizes. Your site looks flawless on every device, from phones to 4K monitors.'},
+      {icon:'⚡',title:'Blazing Fast Performance',desc:'Optimized for Core Web Vitals with sub-2s load times. Speed is a design feature, not an afterthought.'},
+      {icon:'🔍',title:'SEO Architecture',desc:'Semantic HTML, structured data, and metadata best practices baked in from the ground up.'},
+      {icon:'♿',title:'WCAG Accessibility',desc:'Built to AA accessibility standards so your site works for every user, every time.'},
+      {icon:'🎨',title:'Custom Brand Identity',desc:'We don\'t use templates. Every design is uniquely crafted to reflect your brand voice and values.'},
+    ],
+    process:[
+      {title:'Discovery & Strategy',desc:'Deep-dive into your brand, audience, competitors, and goals. We map the user journey before touching Figma.'},
+      {title:'Wireframes & Architecture',desc:'Low-fidelity wireframes establish layout, hierarchy, and flow. Content strategy and sitemap are locked in.'},
+      {title:'Visual Design',desc:'High-fidelity mockups in Figma. Colors, typography, spacing, icons — every detail crafted and refined.'},
+      {title:'Development & Animation',desc:'Pixel-perfect development in React/Next.js or Webflow with smooth GSAP animations and interactions.'},
+      {title:'Testing & Launch',desc:'Cross-browser QA, performance audit, SEO check, and deployment. We stay on call for 30 days post-launch.'},
+    ],
+    tech:['Figma','React','Next.js','Tailwind CSS','GSAP','Webflow','Framer Motion','TypeScript','Vercel'],
+    why:[
+      {icon:'🚀',title:'On-Time Delivery',desc:'We\'ve never missed a deadline in 3 years. Guaranteed.'},
+      {icon:'💎',title:'Premium Quality',desc:'Every site is reviewed by a senior designer before delivery.'},
+      {icon:'🔁',title:'Unlimited Revisions',desc:'We iterate until you\'re 100% happy.'},
+      {icon:'📞',title:'Dedicated Support',desc:'Direct access to your design team, always.'},
+    ]
+  },
+  'saas-dashboard': {
+    tag:'UI/UX Design', icon:'📊', title:'SaaS Dashboard <span>Design</span>',
+    sub:'We craft powerful, intuitive dashboards that transform complex data into actionable insights. Built for power users who need clarity at a glance.',
+    stats:[{num:'80+',label:'Dashboards Built'},{num:'40%',label:'Avg Productivity Gain'},{num:'99%',label:'Retention Rate'},{num:'2 Weeks',label:'MVP Timeline'}],
+    features:[
+      {icon:'📈',title:'Data Visualization',desc:'Complex datasets turned into beautiful, readable charts using D3.js, Recharts, and custom SVG components.'},
+      {icon:'⚡',title:'Real-Time Updates',desc:'WebSocket-powered live data feeds with optimistic UI patterns for zero-lag user experience.'},
+      {icon:'🎛️',title:'Customizable Layouts',desc:'Drag-and-drop widget systems that let users personalize their workspace for maximum productivity.'},
+      {icon:'🔐',title:'Role-Based Views',desc:'Multi-tenant permission systems with distinct UI states for admins, managers, and end users.'},
+      {icon:'📱',title:'Responsive & Dark Mode',desc:'Full responsiveness with system-aware dark/light mode switching and custom theming support.'},
+      {icon:'♿',title:'Keyboard Navigation',desc:'Full keyboard accessibility for power users. Tab order, focus states, and shortcuts all included.'},
+    ],
+    process:[
+      {title:'Data Audit & User Research',desc:'We analyze your data structure and interview actual users to understand how decisions get made.'},
+      {title:'Information Architecture',desc:'Card sorting and tree testing to find the optimal navigation structure and data grouping.'},
+      {title:'Component Design',desc:'Building a reusable component library in Figma — charts, tables, cards, forms — all documented.'},
+      {title:'Prototype & Usability Test',desc:'Interactive prototypes tested with real users. We validate before a single line of code is written.'},
+      {title:'Frontend Development',desc:'Production-ready React/TypeScript code with API integration, state management, and performance tuning.'},
+    ],
+    tech:['React','TypeScript','D3.js','Recharts','Zustand','TanStack Query','Tailwind CSS','Figma','Storybook'],
+    why:[
+      {icon:'🧠',title:'UX Research',desc:'Every decision is backed by user testing, not assumptions.'},
+      {icon:'🏗️',title:'Component Systems',desc:'We deliver a full Storybook library, not just screens.'},
+      {icon:'📊',title:'Data Expertise',desc:'We understand data modelling and API design, not just UI.'},
+      {icon:'🔄',title:'Iterative Process',desc:'Weekly design reviews and sprint-based delivery.'},
+    ]
+  },
+  'mobile-app-ui': {
+    tag:'UI/UX Design', icon:'📱', title:'Mobile App <span>UI Design</span>',
+    sub:'Native iOS and Android experiences that feel right at home on every device. We design mobile interfaces that users actually love to use — not just look at.',
+    stats:[{num:'60+',label:'Apps Launched'},{num:'4.8★',label:'Avg App Store Rating'},{num:'35%',label:'Higher Engagement'},{num:'48hr',label:'First Prototype'}],
+    features:[
+      {icon:'🍎',title:'iOS Human Interface Guidelines',desc:'Designs that feel native to iOS — correct gestures, haptic feedback patterns, SF symbols, and Dynamic Type support.'},
+      {icon:'🤖',title:'Material Design 3',desc:'Android designs following Google\'s latest Material You guidelines with adaptive color and flexible theming.'},
+      {icon:'👆',title:'Gesture-First Interactions',desc:'Swipe, pinch, long-press — every gesture is intentional and discoverable through progressive disclosure.'},
+      {icon:'🌗',title:'Dark & Light Modes',desc:'System-aware themes with custom token systems ensuring readability and beauty in both modes.'},
+      {icon:'📐',title:'Adaptive Layouts',desc:'Designs that work from iPhone SE to iPad Pro, phones to tablets with fluid layout shifts.'},
+      {icon:'♿',title:'Accessibility',desc:'Dynamic Type, VoiceOver/TalkBack support, minimum 4.5:1 contrast ratios. Inclusive by default.'},
+    ],
+    process:[
+      {title:'User Persona & Journey Mapping',desc:'Define who uses the app and map every touchpoint from onboarding to daily usage to edge cases.'},
+      {title:'Interaction Design',desc:'Microinteractions, transition patterns, loading states — the tiny moments that make an app feel polished.'},
+      {title:'Hi-Fi Figma Design',desc:'Full screen designs for all states — empty, loading, error, success, onboarding, settings.'},
+      {title:'Prototype & Device Testing',desc:'Interactive prototypes previewed directly on physical devices using Figma Mirror and TestFlight.'},
+      {title:'Developer Handoff',desc:'Annotated specs, exported assets, motion specs, and a Zeroheight documentation site for engineers.'},
+    ],
+    tech:['Figma','React Native','Flutter','Swift UI','Jetpack Compose','Expo','Lottie','Storybook'],
+    why:[
+      {icon:'📱',title:'Platform Native Feel',desc:'Users can\'t tell it\'s a custom design — it just feels right.'},
+      {icon:'🎬',title:'Motion Design',desc:'We include custom Lottie animations for every key interaction.'},
+      {icon:'🛒',title:'App Store Ready',desc:'Screenshots, app preview videos, and icon design included.'},
+      {icon:'🔬',title:'Usability Testing',desc:'Real user sessions on physical devices before finalizing.'},
+    ]
+  },
+  'product-prototyping': {
+    tag:'UI/UX Design', icon:'⚙️', title:'Product <span>Prototyping</span>',
+    sub:'From rough idea to interactive prototype in days, not months. We de-risk product development by validating ideas before spending a single dollar on engineering.',
+    stats:[{num:'72%',label:'Faster Time-to-Market'},{num:'60%',label:'Dev Cost Savings'},{num:'3 Days',label:'MVP Prototype'},{num:'100+',label:'Concepts Validated'}],
+    features:[
+      {icon:'⚡',title:'Rapid Ideation',desc:'From whiteboard sketch to clickable prototype in 72 hours. We move fast without sacrificing quality.'},
+      {icon:'🔬',title:'Concept Validation',desc:'Test your idea with real users before committing to full development. Kill bad ideas cheaply.'},
+      {icon:'🎭',title:'Micro-Interaction Design',desc:'Realistic transitions, hover states, and animations that simulate the real product experience convincingly.'},
+      {icon:'📐',title:'Wireframe to Hi-Fi',desc:'We take you from rough low-fidelity wireframes all the way to polished, dev-ready high-fidelity designs.'},
+      {icon:'🔗',title:'Clickable Flows',desc:'Shareable Figma prototypes your stakeholders and investors can click through on any device.'},
+      {icon:'📋',title:'UX Documentation',desc:'User flows, edge case specs, and design rationale — everything your dev team needs to build with confidence.'},
+    ],
+    process:[
+      {title:'Discovery Sprint',desc:'2-hour workshop to define the problem, user stories, and MVP scope. We align on what matters most.'},
+      {title:'Lo-Fi Wireframing',desc:'Fast, rough wireframes covering all key screens and user flows. Iterated quickly, discarded cheaply.'},
+      {title:'Interactive Prototype',desc:'Figma prototype with realistic interactions. Shareable link for remote stakeholder review.'},
+      {title:'User Testing',desc:'5-10 user sessions to identify friction points and validate assumptions. Findings reported within 24 hours.'},
+      {title:'Design Refinement',desc:'Incorporate findings into polished hi-fi designs with full component documentation for development.'},
+    ],
+    tech:['Figma','FigJam','Maze','Hotjar','Notion','Miro','Loom','ProtoPie'],
+    why:[
+      {icon:'💰',title:'Save Engineering Costs',desc:'Prototyping costs 10x less than building the wrong product.'},
+      {icon:'🎯',title:'Investor-Ready',desc:'Professional prototypes that win funding rounds.'},
+      {icon:'🚀',title:'Speed',desc:'First prototype delivered within 3 business days.'},
+      {icon:'🔁',title:'Unlimited Iterations',desc:'Pivot as many times as needed within the sprint.'},
+    ]
+  },
+  'design-systems': {
+    tag:'UI/UX Design', icon:'🎭', title:'Design <span>Systems</span>',
+    sub:'A single source of truth for your product design. We build scalable, documented design systems that make your team 4x faster and your product 10x more consistent.',
+    stats:[{num:'4x',label:'Faster Dev Cycles'},{num:'90%',label:'Less Design Debt'},{num:'500+',label:'Components Built'},{num:'12 Weeks',label:'Full System'}],
+    features:[
+      {icon:'🧱',title:'Atomic Component Library',desc:'From atoms (colors, type, icons) to organisms (forms, cards, modals) — a complete building-block system.'},
+      {icon:'🎨',title:'Token Architecture',desc:'Semantic design tokens for colors, spacing, radius, and typography. Change your theme in one place.'},
+      {icon:'📚',title:'Storybook Documentation',desc:'Every component documented with variants, props, usage guidelines, and do/don\'t examples.'},
+      {icon:'🔗',title:'Figma + Code Sync',desc:'Components in Figma that map 1:1 to your codebase. No translation loss between design and development.'},
+      {icon:'♿',title:'Accessibility Built In',desc:'WCAG AA compliance baked into every component. Focus states, ARIA labels, color contrast — all handled.'},
+      {icon:'📦',title:'NPM Package Ready',desc:'Published as a versioned npm package your teams can install, import, and upgrade with semantic versioning.'},
+    ],
+    process:[
+      {title:'Audit & Inventory',desc:'Audit your existing UI to catalog all components, identify inconsistencies, and define scope.'},
+      {title:'Foundation Layer',desc:'Define tokens: color palettes, type scales, spacing system, grid, shadow, and border radius systems.'},
+      {title:'Component Architecture',desc:'Build the component hierarchy from atoms to organisms with all variants, states, and responsive behaviors.'},
+      {title:'Documentation',desc:'Write usage guidelines, do/don\'ts, and accessibility notes for every component in Storybook.'},
+      {title:'Training & Handoff',desc:'Live workshops with your design and engineering teams. Ongoing support for 3 months post-delivery.'},
+    ],
+    tech:['Figma','React','TypeScript','Storybook','Chromatic','Tailwind CSS','Radix UI','npm','GitHub'],
+    why:[
+      {icon:'📏',title:'True Consistency',desc:'Every page, every feature — pixel-perfect consistency at scale.'},
+      {icon:'🏃',title:'Ship Faster',desc:'New features built in hours, not days, using pre-built components.'},
+      {icon:'🔧',title:'Easy Maintenance',desc:'One update propagates everywhere instantly.'},
+      {icon:'👥',title:'Team Alignment',desc:'Designers and developers always speak the same language.'},
+    ]
+  },
+  'machine-learning': {
+    tag:'AI Development', icon:'🧬', title:'Machine Learning <span>Development</span>',
+    sub:'Custom machine learning models trained on your proprietary data. From regression to deep neural networks — we build AI that solves your specific business problem with precision.',
+    stats:[{num:'50+',label:'Models Deployed'},{num:'97%',label:'Avg Model Accuracy'},{num:'10x',label:'Faster Inference'},{num:'6 Weeks',label:'Model-to-Production'}],
+    features:[
+      {icon:'🏋️',title:'Custom Model Training',desc:'Models trained exclusively on your data — not generic pre-trained weights. Your data, your competitive advantage.'},
+      {icon:'🔍',title:'Feature Engineering',desc:'Expert feature selection, transformation, and synthesis to extract maximum signal from your dataset.'},
+      {icon:'📊',title:'Model Explainability',desc:'SHAP values, LIME, and attention maps so you understand why your model makes every prediction.'},
+      {icon:'🚀',title:'Production MLOps',desc:'Containerized model serving with auto-scaling, A/B testing, canary deployments, and drift detection.'},
+      {icon:'🔄',title:'Continuous Learning',desc:'Automated retraining pipelines that keep your models fresh as data distributions shift over time.'},
+      {icon:'🛡️',title:'Bias Auditing',desc:'Rigorous fairness evaluation across demographic groups with bias mitigation techniques applied.'},
+    ],
+    process:[
+      {title:'Problem Framing',desc:'Define the ML task, success metrics, data requirements, and business constraints before writing a line of code.'},
+      {title:'Data Pipeline',desc:'ETL pipeline to clean, transform, augment, and version your training data. Quality data = quality models.'},
+      {title:'Experimentation',desc:'Multiple model architectures evaluated in a tracked experiment environment. Best performer selected.'},
+      {title:'Training & Tuning',desc:'Hyperparameter optimization, cross-validation, ensemble methods — squeezing every % of accuracy out.'},
+      {title:'Deployment & Monitoring',desc:'REST API deployment with real-time monitoring, alerting, and automated rollback on performance degradation.'},
+    ],
+    tech:['Python','PyTorch','TensorFlow','scikit-learn','MLflow','Kubeflow','FastAPI','Docker','AWS SageMaker'],
+    why:[
+      {icon:'🎯',title:'Business-Aligned',desc:'We optimize for business KPIs, not just academic accuracy metrics.'},
+      {icon:'🔬',title:'Research-Backed',desc:'Our ML engineers have published peer-reviewed research.'},
+      {icon:'📦',title:'Full Ownership',desc:'You own all model weights, code, and training data pipelines.'},
+      {icon:'🚦',title:'Production Ready',desc:'Not a notebook — a production-grade ML system with monitoring.'},
+    ]
+  },
+  'computer-vision': {
+    tag:'AI Development', icon:'👁️', title:'Computer Vision <span>Systems</span>',
+    sub:'Real-time image and video intelligence that sees what humans miss. From defect detection to facial recognition — we build vision AI that operates at industrial scale.',
+    stats:[{num:'99.2%',label:'Detection Accuracy'},{num:'30ms',label:'Inference Latency'},{num:'24/7',label:'Uptime SLA'},{num:'40+',label:'CV Projects'}],
+    features:[
+      {icon:'🔍',title:'Object Detection & Tracking',desc:'Multi-class real-time object detection using YOLO, DETR, and custom architectures — from 1 to 1000s of objects per frame.'},
+      {icon:'🏭',title:'Defect Detection',desc:'Sub-millimeter quality inspection on manufacturing lines. Catch defects humans miss at 200+ units/minute.'},
+      {icon:'🔢',title:'OCR & Document AI',desc:'Intelligent document processing — extract structured data from invoices, forms, IDs, and handwritten text.'},
+      {icon:'🧑',title:'Face Analysis',desc:'Emotion recognition, age/gender estimation, and identity verification with liveness detection.'},
+      {icon:'🎬',title:'Video Analytics',desc:'Crowd counting, heatmaps, dwell time, and behavior analysis from CCTV and IP camera streams.'},
+      {icon:'🌍',title:'Edge Deployment',desc:'Optimized models for Jetson Nano, Raspberry Pi, and custom FPGA/ASIC hardware using TensorRT and ONNX.'},
+    ],
+    process:[
+      {title:'Data Collection & Annotation',desc:'Coordinate dataset collection, labeling sprints (bounding boxes, polygons, keypoints), and quality review.'},
+      {title:'Baseline Modeling',desc:'Evaluate pre-trained SOTA models as baselines. Identify performance gaps that require custom training.'},
+      {title:'Custom Architecture Design',desc:'Design or fine-tune architectures for your specific domain — small object detection, low-light, medical imaging.'},
+      {title:'Training & Augmentation',desc:'Aggressive data augmentation, transfer learning, and multi-scale training for robust real-world performance.'},
+      {title:'Edge Optimization & Deploy',desc:'Quantization, pruning, and TensorRT conversion for edge devices. Camera integration and API development.'},
+    ],
+    tech:['Python','PyTorch','YOLOv8','OpenCV','ONNX','TensorRT','NVIDIA Jetson','Roboflow','Label Studio'],
+    why:[
+      {icon:'🏭',title:'Industrial Grade',desc:'Tested in real manufacturing environments, not just benchmarks.'},
+      {icon:'⚡',title:'Real-Time Performance',desc:'30ms latency even on edge hardware with power constraints.'},
+      {icon:'📷',title:'Any Camera',desc:'Works with USB, IP, RTSP, GigE, and thermal cameras.'},
+      {icon:'🔒',title:'On-Premise Option',desc:'Deploy fully on-site with zero data leaving your facility.'},
+    ]
+  },
+  'ai-chatbots': {
+    tag:'AI Development', icon:'💬', title:'AI Chatbot <span>Development</span>',
+    sub:'Conversational AI that actually understands context, tone, and intent. We build intelligent chatbots that resolve queries, qualify leads, and delight customers — 24/7.',
+    stats:[{num:'94%',label:'Query Resolution Rate'},{num:'60%',label:'Support Cost Reduction'},{num:'4,000+',label:'Daily Queries Handled'},{num:'3 Days',label:'Time to Deploy'}],
+    features:[
+      {icon:'🧠',title:'Custom Knowledge Base',desc:'Train your bot on your documentation, FAQs, product data, and internal knowledge. No hallucinations.'},
+      {icon:'🔗',title:'RAG Architecture',desc:'Retrieval-Augmented Generation ensures accurate, source-cited responses from your proprietary content.'},
+      {icon:'💬',title:'Multi-Channel Deploy',desc:'One bot, everywhere — Website, WhatsApp, Slack, Telegram, Discord, and MS Teams from a single dashboard.'},
+      {icon:'🔄',title:'Context Memory',desc:'Session-based and long-term memory so users never have to repeat themselves across conversations.'},
+      {icon:'📊',title:'Analytics Dashboard',desc:'Track query types, resolution rates, escalation triggers, and satisfaction scores in real-time.'},
+      {icon:'🤝',title:'Human Handoff',desc:'Seamless escalation to live agents with full conversation history forwarded automatically.'},
+    ],
+    process:[
+      {title:'Intent & Entity Mapping',desc:'Workshop to define all user intents, entities, and expected conversation flows for your use case.'},
+      {title:'Knowledge Base Setup',desc:'Ingest and structure your content — PDFs, Notion, Confluence, Zendesk, websites — into a vector database.'},
+      {title:'Bot Persona & Tone',desc:'Define the bot\'s personality, voice, tone of voice, and escalation behavior aligned to your brand.'},
+      {title:'Build & Train',desc:'LLM fine-tuning or RAG pipeline setup, integration with your CRM/helpdesk, and testing across edge cases.'},
+      {title:'Launch & Optimize',desc:'A/B test response variants, monitor conversation drop-off points, and continuously improve with real usage data.'},
+    ],
+    tech:['OpenAI GPT-4','LangChain','Pinecone','Weaviate','Twilio','WhatsApp API','Slack SDK','Python','FastAPI'],
+    why:[
+      {icon:'🎯',title:'No Generic Bots',desc:'Every bot is trained on your data, not generic LLM weights.'},
+      {icon:'📊',title:'Full Analytics',desc:'You see every conversation, metric, and improvement opportunity.'},
+      {icon:'🔌',title:'CRM Integration',desc:'Native Salesforce, HubSpot, and Zendesk connectors included.'},
+      {icon:'🛡️',title:'Privacy First',desc:'Your data never trains the base model. Fully isolated.'},
+    ]
+  },
+  'ai-automation': {
+    tag:'AI Development', icon:'🔧', title:'AI <span>Automation</span>',
+    sub:'Intelligent automation that learns, adapts, and improves over time. We replace repetitive manual work with AI agents that execute complex multi-step workflows autonomously.',
+    stats:[{num:'80%',label:'Manual Work Eliminated'},{num:'10x',label:'Processing Speed'},{num:'<0.1%',label:'Error Rate'},{num:'3 Months',label:'Average ROI'}],
+    features:[
+      {icon:'🤖',title:'AI Agents',desc:'Autonomous agents that plan, reason, and execute multi-step tasks — browsing the web, writing code, or managing files.'},
+      {icon:'🔗',title:'API Orchestration',desc:'Connect any two systems with intelligent middleware. If it has an API, we can automate it.'},
+      {icon:'📧',title:'Email & Document Processing',desc:'Auto-classify, extract data from, and route emails and documents with 99%+ accuracy using LLMs.'},
+      {icon:'📋',title:'Workflow Intelligence',desc:'AI that understands context, makes decisions, and handles exceptions — not just rule-based if/then logic.'},
+      {icon:'🔔',title:'Smart Alerting',desc:'Anomaly detection that knows the difference between normal variation and a real problem worth escalating.'},
+      {icon:'📈',title:'Self-Improving Pipelines',desc:'Feedback loops that capture corrections and retrain edge-case handlers automatically over time.'},
+    ],
+    process:[
+      {title:'Process Audit',desc:'Map every manual step, decision point, and exception handler in your current process. Quantify time cost.'},
+      {title:'Automation Blueprint',desc:'Design the AI workflow — triggers, actions, conditions, integrations, and human-in-the-loop checkpoints.'},
+      {title:'Build & Integrate',desc:'Build automation using n8n, Make, Zapier, or custom Python agents. Integrate with your existing systems.'},
+      {title:'Shadow Mode Testing',desc:'Run automation in parallel with humans for 2 weeks. Compare outputs. Tune until accuracy is acceptable.'},
+      {title:'Deploy & Hand Over',desc:'Full handover with monitoring dashboards, error handling, and escalation paths for your operations team.'},
+    ],
+    tech:['Python','LangGraph','n8n','Make.com','Zapier','OpenAI','Anthropic Claude','Apache Airflow','Temporal'],
+    why:[
+      {icon:'💰',title:'Measurable ROI',desc:'We calculate time-saved and cost-saved before and after. Always positive.'},
+      {icon:'🔧',title:'Maintained Systems',desc:'We maintain and improve your automations, not just build and leave.'},
+      {icon:'🔌',title:'Works With Legacy',desc:'We integrate with legacy systems, even ones without APIs.'},
+      {icon:'🛡️',title:'Fail-Safe Design',desc:'Every automation has fallback to human review for edge cases.'},
+    ]
+  },
+  'predictive-analytics': {
+    tag:'AI Development', icon:'📈', title:'Predictive <span>Analytics</span>',
+    sub:'Stop reacting to what happened. Start anticipating what will happen. We build predictive systems that give your team a 30-day window into the future of your business.',
+    stats:[{num:'89%',label:'Forecast Accuracy'},{num:'30 Days',label:'Prediction Horizon'},{num:'5x',label:'Revenue Impact'},{num:'Real-Time',label:'Model Updates'}],
+    features:[
+      {icon:'💰',title:'Revenue Forecasting',desc:'Predict MRR, churn, and pipeline close probability with confidence intervals your CFO can plan around.'},
+      {icon:'🛒',title:'Demand Forecasting',desc:'Inventory and supply chain optimization with multi-variable demand models accounting for seasonality and events.'},
+      {icon:'👥',title:'Churn Prediction',desc:'Identify customers at risk of churning 60 days before they leave. Trigger retention campaigns automatically.'},
+      {icon:'🔧',title:'Predictive Maintenance',desc:'Predict equipment failure before it happens. Reduce downtime by 70% with sensor data ML models.'},
+      {icon:'💳',title:'Credit & Risk Scoring',desc:'Alternative data credit models, fraud detection, and real-time transaction risk scoring systems.'},
+      {icon:'📊',title:'Interactive Dashboards',desc:'Executive dashboards with forecast bands, scenario modeling, and drill-down capabilities for non-technical users.'},
+    ],
+    process:[
+      {title:'Data Discovery',desc:'Audit all data sources — CRM, ERP, transactional DB, external signals — assess quality and predictive value.'},
+      {title:'Feature Store Build',desc:'Engineer 50-200+ predictive features. Time-series aggregations, lag features, rolling windows, and external data joins.'},
+      {title:'Model Development',desc:'Gradient boosting, LSTM, Prophet, and ensemble methods benchmarked. Best validated against holdout data.'},
+      {title:'Calibration',desc:'Probability calibration so when the model says 80% chance, it\'s right ~80% of the time. Critical for trust.'},
+      {title:'BI Integration',desc:'Predictions surfaced in Tableau, Power BI, Looker, or a custom dashboard with explanations in plain English.'},
+    ],
+    tech:['Python','XGBoost','Prophet','PyTorch','dbt','Snowflake','Tableau','Power BI','Airflow','Great Expectations'],
+    why:[
+      {icon:'🎯',title:'Business-Calibrated',desc:'Models optimized for business impact, not just statistical accuracy.'},
+      {icon:'📖',title:'Explainable',desc:'Every prediction comes with a "why" your team can trust and act on.'},
+      {icon:'🔄',title:'Always Fresh',desc:'Automated retraining keeps models accurate as your business evolves.'},
+      {icon:'🔌',title:'Plug Into Any BI',desc:'Works with your existing Tableau, Power BI, or Metabase setup.'},
+    ]
+  },
+  'saas-platforms': {
+    tag:'Web Development', icon:'☁️', title:'SaaS Platform <span>Development</span>',
+    sub:'We build full-stack, multi-tenant SaaS platforms from 0 to 1. Architected for scale from day one — your platform will handle 10 users or 10 million with the same codebase.',
+    stats:[{num:'30+',label:'SaaS Platforms Built'},{num:'10M+',label:'Users Served'},{num:'99.99%',label:'Uptime SLA'},{num:'8 Weeks',label:'MVP Launch'}],
+    features:[
+      {icon:'🏢',title:'Multi-Tenancy Architecture',desc:'Isolated data per tenant with shared infrastructure. Choose between silo, bridge, or pool isolation strategies.'},
+      {icon:'💳',title:'Billing & Subscriptions',desc:'Stripe-powered subscription management, usage-based billing, trial logic, and proration — fully automated.'},
+      {icon:'🔐',title:'Auth & SSO',desc:'Magic link, OAuth, SAML SSO, and MFA support out of the box. Enterprise-ready authentication from day one.'},
+      {icon:'📊',title:'Analytics & Reporting',desc:'Built-in event tracking, funnel analysis, feature usage metrics, and white-label report generation.'},
+      {icon:'🔗',title:'API-First Design',desc:'REST and GraphQL APIs with OpenAPI documentation, SDK generation, and webhook support for integrations.'},
+      {icon:'⚙️',title:'Admin & Ops Panel',desc:'Internal admin dashboard for user management, feature flags, impersonation, and operational metrics.'},
+    ],
+    process:[
+      {title:'Architecture Design',desc:'Design the data model, auth system, tenant isolation strategy, and infrastructure architecture upfront.'},
+      {title:'Core Platform',desc:'Auth, billing, team management, settings, notifications — the infrastructure every SaaS needs, built first.'},
+      {title:'Feature Sprints',desc:'2-week sprints delivering your core product functionality with continuous stakeholder demos.'},
+      {title:'Performance & Security',desc:'Load testing, penetration testing, OWASP audit, and performance profiling before any public launch.'},
+      {title:'Launch & Scale',desc:'Deployment pipeline, monitoring setup, runbook creation, and hypercare support for 30 days post-launch.'},
+    ],
+    tech:['Next.js','TypeScript','PostgreSQL','Prisma','Stripe','Auth.js','Redis','AWS','Terraform','Vercel'],
+    why:[
+      {icon:'🚀',title:'Launch in 8 Weeks',desc:'Battle-tested boilerplate means you skip months of foundation work.'},
+      {icon:'📏',title:'Built to Scale',desc:'Architecture reviewed by engineers who\'ve scaled to millions of users.'},
+      {icon:'🔒',title:'SOC2 Ready',desc:'Security controls and audit logging designed for compliance from day one.'},
+      {icon:'💰',title:'Fixed Price',desc:'No surprise invoices. Scope locked before we start.'},
+    ]
+  },
+  'startup-websites': {
+    tag:'Web Development', icon:'🚀', title:'Startup <span>Websites</span>',
+    sub:'The website that closes your next funding round. We build high-converting startup websites that communicate your vision clearly and turn visitors into believers.',
+    stats:[{num:'150+',label:'Startups Served'},{num:'$50M+',label:'Funding Raised Post-Launch'},{num:'3.8%',label:'Avg Conversion Rate'},{num:'5 Days',label:'Launch Timeline'}],
+    features:[
+      {icon:'🎯',title:'Narrative-Driven Design',desc:'We don\'t just design pages — we architect stories. Your hero, problem, solution, proof, and CTA flow perfectly.'},
+      {icon:'🚀',title:'Landing Page Optimization',desc:'CRO best practices: above-the-fold clarity, social proof placement, urgency triggers, and friction reduction.'},
+      {icon:'⚡',title:'100/100 Lighthouse Score',desc:'Optimized for Core Web Vitals with lazy loading, image optimization, and perfect performance budgets.'},
+      {icon:'📹',title:'Product Demo Integration',desc:'Embedded Loom, interactive demos, and product screenshots that show — not just tell — what you do.'},
+      {icon:'📊',title:'Analytics Ready',desc:'GA4, Mixpanel, and LinkedIn Insight Tag all pre-configured with conversion event tracking from day one.'},
+      {icon:'🌐',title:'i18n Ready',desc:'Multi-language support with next-intl and localized content management for global market expansion.'},
+    ],
+    process:[
+      {title:'Positioning Workshop',desc:'2-hour session to nail your value proposition, target persona, and one-sentence pitch.'},
+      {title:'Copywriting',desc:'Conversion-focused copy written before design starts. Design serves the story, not the other way around.'},
+      {title:'Design & Animations',desc:'Stunning visual design with scroll animations, hover effects, and a final hero video or 3D illustration.'},
+      {title:'Development',desc:'Built in Next.js with Sanity CMS so your team can update content without touching code.'},
+      {title:'Launch & Track',desc:'A/B test variant setup, heatmap tracking with Hotjar, and first-week performance review call.'},
+    ],
+    tech:['Next.js','Sanity CMS','Tailwind CSS','Framer Motion','GSAP','Vercel','GA4','Hotjar','TypeScript'],
+    why:[
+      {icon:'✍️',title:'Copy Included',desc:'Conversion copywriting is part of every package — not an add-on.'},
+      {icon:'⚡',title:'5-Day Turnaround',desc:'Fastest startup website delivery in the market.'},
+      {icon:'🔧',title:'CMS Included',desc:'Edit every word yourself without touching code.'},
+      {icon:'📈',title:'Conversion Optimized',desc:'Every element exists to convert visitors into leads or users.'},
+    ]
+  },
+  'enterprise-apps': {
+    tag:'Web Development', icon:'🏢', title:'Enterprise App <span>Development</span>',
+    sub:'Mission-critical applications built to last a decade. We engineer enterprise software with the reliability, security, and governance standards your organization demands.',
+    stats:[{num:'20+',label:'Enterprise Clients'},{num:'99.99%',label:'Uptime SLA'},{num:'0',label:'Security Breaches'},{num:'10 Years',label:'Average Lifespan'}],
+    features:[
+      {icon:'🔐',title:'Enterprise Security',desc:'SOC2 Type II, ISO 27001 compliance. End-to-end encryption, audit trails, and zero-trust architecture.'},
+      {icon:'🔗',title:'Legacy System Integration',desc:'Connect to SAP, Oracle, Salesforce, and mainframe systems via REST, SOAP, or direct database connectors.'},
+      {icon:'📋',title:'Compliance & Governance',desc:'Role-based access control, data residency controls, GDPR/CCPA compliance, and full audit logging.'},
+      {icon:'⚙️',title:'Business Logic Engine',desc:'Complex workflow engines with approval chains, SLAs, escalation rules, and configurable business rules.'},
+      {icon:'🌐',title:'Global Scale',desc:'Multi-region deployment, content delivery networks, and database replication for sub-100ms response worldwide.'},
+      {icon:'📊',title:'BI Integration',desc:'Native connectors to Tableau, Power BI, and Snowflake with row-level security for safe data access.'},
+    ],
+    process:[
+      {title:'Requirements & Architecture',desc:'Formal requirements gathering, technical architecture design, and security review with your IT and compliance teams.'},
+      {title:'Phased Delivery Plan',desc:'Milestones broken into 2-week sprints with formal acceptance criteria, sign-off processes, and change management.'},
+      {title:'Development & Code Review',desc:'Senior-only development with mandatory peer review, static analysis, and OWASP scanning on every commit.'},
+      {title:'UAT & Compliance Audit',desc:'Formal user acceptance testing, penetration testing, and compliance audit before any production deployment.'},
+      {title:'Hypercare & SLA',desc:'24/7 monitoring, defined incident SLAs, dedicated account manager, and 12-month warranty.'},
+    ],
+    tech:['Java Spring Boot','React','PostgreSQL','Oracle','Kubernetes','AWS GovCloud','Terraform','Splunk','Vault'],
+    why:[
+      {icon:'🛡️',title:'Certified Security',desc:'SOC2 Type II audited processes and infrastructure.'},
+      {icon:'📋',title:'Formal Documentation',desc:'Full technical documentation for your internal teams.'},
+      {icon:'🤝',title:'Dedicated Team',desc:'Named engineers who know your system deeply, not ticket-based support.'},
+      {icon:'⏱️',title:'SLA Guaranteed',desc:'Contractual uptime and response time SLAs with financial penalties.'},
+    ]
+  },
+  'admin-dashboards': {
+    tag:'Web Development', icon:'🖥️', title:'Admin Dashboard <span>Development</span>',
+    sub:'Powerful internal tools that give your team superpowers. We build admin panels, ops dashboards, and internal tools that make managing your business 10x more efficient.',
+    stats:[{num:'100+',label:'Dashboards Deployed'},{num:'6 Hours',label:'Time Saved/User/Week'},{num:'50%',label:'Ops Cost Reduction'},{num:'2 Weeks',label:'Delivery Time'}],
+    features:[
+      {icon:'🔍',title:'Advanced Data Tables',desc:'Virtualized tables handling millions of rows with sorting, filtering, grouping, column resizing, and bulk actions.'},
+      {icon:'📊',title:'Real-Time Charts',desc:'Live-updating charts for monitoring dashboards, operations centers, and executive reporting.'},
+      {icon:'⚙️',title:'Configurable Workflows',desc:'Non-technical admins configure approval flows, field visibility, and role permissions without code changes.'},
+      {icon:'🔔',title:'Alert Management',desc:'Custom alert rules, notification channels (email, Slack, SMS), and escalation policies built in.'},
+      {icon:'🔗',title:'Deep Integrations',desc:'Connect to your database, CRM, ERP, billing system, and monitoring tools from a single unified UI.'},
+      {icon:'📤',title:'Export & Reporting',desc:'Scheduled CSV/Excel exports, PDF report generation, and API endpoints for BI tool integration.'},
+    ],
+    process:[
+      {title:'User Role Analysis',desc:'Interview each admin role — ops, finance, support, engineering — to understand what data and actions they need daily.'},
+      {title:'Data Architecture',desc:'Design the data access layer — APIs, caching strategy, and real-time subscription setup.'},
+      {title:'UI Component Build',desc:'Build the table, chart, form, and modal components as a reusable internal component library.'},
+      {title:'Feature Integration',desc:'Wire up every feature to real APIs with proper loading, error, and empty states.'},
+      {title:'Rollout & Training',desc:'Staged rollout team by team. Training videos, documentation, and office hours for 2 weeks.'},
+    ],
+    tech:['React','TypeScript','TanStack Table','Recharts','Shadcn UI','FastAPI','PostgreSQL','Redis','Tailwind CSS'],
+    why:[
+      {icon:'🎯',title:'Built for Power Users',desc:'Keyboard shortcuts, bulk actions, and advanced filters for daily ops users.'},
+      {icon:'⚡',title:'Fast Delivery',desc:'First working version in 2 weeks using our internal component library.'},
+      {icon:'🔧',title:'Self-Serve Config',desc:'Admins configure without engineering intervention.'},
+      {icon:'📱',title:'Mobile Ready',desc:'Responsive for on-the-go monitoring from any device.'},
+    ]
+  },
+  'business-automation': {
+    tag:'Automation', icon:'🏭', title:'Business Process <span>Automation</span>',
+    sub:'End-to-end automation of your most time-consuming business processes. We map, engineer, and deploy automated systems that run your operations around the clock without human intervention.',
+    stats:[{num:'80%',label:'Time Savings'},{num:'6 Month',label:'Average ROI'},{num:'99.9%',label:'Process Accuracy'},{num:'24/7',label:'Operations'}],
+    features:[
+      {icon:'🔁',title:'Process Mapping',desc:'Visual BPMN process maps that document every step, decision, exception, and handoff in your current workflow.'},
+      {icon:'📋',title:'Form & Approval Automation',desc:'Replace email chains with structured digital forms, SLA-tracked approvals, and audit trails.'},
+      {icon:'📧',title:'Email Automation',desc:'Trigger-based email sequences, auto-classification of inbound emails, and intelligent routing to the right team.'},
+      {icon:'📄',title:'Document Automation',desc:'Auto-generate contracts, invoices, reports, and proposals from templates populated by CRM data.'},
+      {icon:'🔗',title:'System Integration',desc:'Connect your CRM, ERP, accounting software, and communication tools into seamless data flows.'},
+      {icon:'📊',title:'Process Analytics',desc:'Track cycle times, bottlenecks, SLA compliance, and ROI for every automated process.'},
+    ],
+    process:[
+      {title:'Process Discovery',desc:'Shadow your team, review your current tools, and document every manual step with time estimates.'},
+      {title:'ROI Modeling',desc:'Calculate hours saved, error reduction, and cost savings before a single workflow is built.'},
+      {title:'Automation Design',desc:'Design the target state workflow with all integrations, exception handlers, and monitoring requirements.'},
+      {title:'Build & Test',desc:'Build automation in n8n/Make/custom code, test with parallel runs alongside your team.'},
+      {title:'Deploy & Train',desc:'Full deployment, team training, and handover documentation. Ongoing support for 3 months.'},
+    ],
+    tech:['n8n','Make.com','Zapier','Microsoft Power Automate','Python','REST APIs','PostgreSQL','Slack','Notion'],
+    why:[
+      {icon:'📊',title:'ROI Guaranteed',desc:'We model ROI before building. If it doesn\'t make sense, we tell you.'},
+      {icon:'🔧',title:'Maintained',desc:'We monitor and fix your automations, not just build them.'},
+      {icon:'👥',title:'Change Management',desc:'Team training and adoption support included in every project.'},
+      {icon:'📋',title:'Documented',desc:'Full process documentation your team can maintain independently.'},
+    ]
+  },
+  'ai-workflow': {
+    tag:'Automation', icon:'🔄', title:'AI Workflow <span>Automation</span>',
+    sub:'The next evolution beyond rule-based automation. AI workflows that understand context, make intelligent decisions, and adapt to exceptions — just like a smart human employee would.',
+    stats:[{num:'95%',label:'Exception Handling Rate'},{num:'100x',label:'Throughput Increase'},{num:'<$0.01',label:'Cost Per Task'},{num:'Instant',label:'Response Time'}],
+    features:[
+      {icon:'🧠',title:'LLM-Powered Decision Making',desc:'Replace rigid if/then rules with GPT-4/Claude-powered reasoning that handles edge cases intelligently.'},
+      {icon:'🤖',title:'Autonomous AI Agents',desc:'Agents that can browse the web, read files, run code, and make API calls to complete complex multi-step tasks.'},
+      {icon:'📋',title:'Intelligent Document Processing',desc:'Extract, classify, and act on information from unstructured documents — emails, PDFs, images — with 99% accuracy.'},
+      {icon:'🔔',title:'Smart Routing',desc:'AI classifies incoming requests by topic, urgency, and sentiment, then routes to the right system or person.'},
+      {icon:'💬',title:'Natural Language Interfaces',desc:'Let non-technical staff trigger complex workflows by sending a message in plain English or WhatsApp.'},
+      {icon:'📈',title:'Continuous Learning',desc:'Feedback loops that capture human corrections and improve the AI\'s decision-making over time automatically.'},
+    ],
+    process:[
+      {title:'Workflow Intelligence Audit',desc:'Identify which of your workflows require human judgment and quantify the cost of that judgment time.'},
+      {title:'AI Suitability Assessment',desc:'Evaluate each workflow for AI automation potential. Not every process needs AI — we\'ll be honest.'},
+      {title:'Prompt Engineering',desc:'Design the system prompts, few-shot examples, and output schemas for each AI decision point.'},
+      {title:'Build & Safety Test',desc:'Build with human-in-the-loop checkpoints for high-risk decisions. Test failure modes exhaustively.'},
+      {title:'Monitor & Improve',desc:'Track every AI decision, capture corrections, and retrain/fine-tune prompts based on real-world data.'},
+    ],
+    tech:['OpenAI GPT-4','Anthropic Claude','LangChain','LangGraph','n8n','Python','Pinecone','Redis','FastAPI'],
+    why:[
+      {icon:'🧠',title:'True Intelligence',desc:'Handles ambiguity and edge cases that break rule-based automation.'},
+      {icon:'🛡️',title:'Safe by Design',desc:'Human checkpoints for sensitive decisions. Never fully autonomous without your approval.'},
+      {icon:'📊',title:'Full Audit Trail',desc:'Every AI decision logged with reasoning for compliance and review.'},
+      {icon:'🔧',title:'Prompt Maintenance',desc:'We maintain and improve your AI prompts as your business evolves.'},
+    ]
+  },
+  'data-processing': {
+    tag:'Automation', icon:'🗄️', title:'Data Processing <span>Pipelines</span>',
+    sub:'Transform raw data chaos into clean, reliable, analytics-ready datasets. We build ETL pipelines and real-time data streams that your entire organization can trust and build upon.',
+    stats:[{num:'1B+',label:'Records Processed Daily'},{num:'99.9%',label:'Data Quality Score'},{num:'<5min',label:'Data Freshness'},{num:'50+',label:'Pipelines Built'}],
+    features:[
+      {icon:'🔄',title:'ETL Pipeline Development',desc:'Extract, Transform, Load — automated pipelines that move data from any source to any destination on schedule.'},
+      {icon:'⚡',title:'Real-Time Streaming',desc:'Apache Kafka and Flink-based streaming pipelines for event-driven architectures requiring sub-second data freshness.'},
+      {icon:'🏗️',title:'Data Warehouse Architecture',desc:'Snowflake, BigQuery, or Redshift warehouse design with dimensional modeling and star schema best practices.'},
+      {icon:'🔍',title:'Data Quality Monitoring',desc:'Automated data quality checks with anomaly detection, null rate monitoring, and schema drift alerts.'},
+      {icon:'📊',title:'dbt Transformation Layer',desc:'SQL-first transformation logic in dbt with version control, testing, and automatic documentation.'},
+      {icon:'🔐',title:'Data Governance',desc:'Column-level encryption, PII detection, data lineage tracking, and access control for compliance.'},
+    ],
+    process:[
+      {title:'Data Source Inventory',desc:'Catalog all data sources — databases, APIs, files, SaaS tools — and assess data quality and access methods.'},
+      {title:'Warehouse Design',desc:'Design the target data model — staging, intermediate, and mart layers — optimized for your analytics use cases.'},
+      {title:'Pipeline Development',desc:'Build extraction connectors, transformation logic in dbt, and loading procedures with idempotent design.'},
+      {title:'Quality Framework',desc:'Implement Great Expectations or dbt tests for every critical data assertion. SLA alerting configured.'},
+      {title:'BI Connection',desc:'Connect warehouse to Tableau, Power BI, or Metabase. Train your analytics team on the new data model.'},
+    ],
+    tech:['Apache Airflow','dbt','Snowflake','BigQuery','Kafka','Flink','Python','Great Expectations','Fivetran','Airbyte'],
+    why:[
+      {icon:'✅',title:'Data You Can Trust',desc:'Automated quality checks so your team stops questioning data accuracy.'},
+      {icon:'⚡',title:'Always Fresh',desc:'Real-time or near-real-time data for time-sensitive decisions.'},
+      {icon:'📖',title:'Self-Documenting',desc:'dbt auto-generates a data catalog your analysts actually use.'},
+      {icon:'📈',title:'Scales Infinitely',desc:'Cloud-native architecture grows with your data volume automatically.'},
+    ]
+  },
+  'resume-ai': {
+    tag:'AI Product', icon:'📄', title:'Resume AI <span>Generator</span>',
+    sub:'Create ATS-beating, professionally tailored resumes in under 60 seconds. Our AI analyzes job descriptions and engineers the perfect resume that gets you to the interview stage.',
+    stats:[{num:'97%',label:'ATS Pass Rate'},{num:'3x',label:'Interview Callbacks'},{num:'60s',label:'Generation Time'},{num:'50+',label:'Templates'}],
+    features:[
+      {icon:'🎯',title:'Job Description Matching',desc:'Paste a job description and our AI rewrites your resume bullets to match exact keywords and requirements.'},
+      {icon:'📊',title:'ATS Score Analyzer',desc:'Real-time ATS compatibility score with specific recommendations to fix formatting, keywords, and structure.'},
+      {icon:'✍️',title:'Smart Bullet Writing',desc:'AI rewrites your experience as impactful, metric-driven bullet points using the STAR and XYZ frameworks.'},
+      {icon:'🎨',title:'50+ Premium Templates',desc:'Professionally designed templates for tech, finance, marketing, healthcare, and creative industries.'},
+      {icon:'🌍',title:'Multi-Language Support',desc:'Generate resumes in 25 languages with culturally-adapted formatting for US, EU, and APAC markets.'},
+      {icon:'💼',title:'LinkedIn Import',desc:'One-click import from your LinkedIn profile. No manual data entry to get started.'},
+    ],
+    process:[
+      {title:'Profile Import',desc:'Import from LinkedIn or fill a guided form. AI extracts and structures your career data automatically.'},
+      {title:'Job Target',desc:'Paste the job description. AI analyzes required skills, keywords, and tone of voice.'},
+      {title:'AI Generation',desc:'GPT-4 generates tailored resume content optimized for that specific role in under 60 seconds.'},
+      {title:'Review & Edit',desc:'Inline editor lets you refine any section. AI suggests improvements as you type.'},
+      {title:'Export',desc:'Download as PDF, Word, or plain text. Share directly to LinkedIn or email the recruiter.'},
+    ],
+    tech:['GPT-4','React','Node.js','PostgreSQL','Puppeteer PDF','Redis','AWS S3','Stripe'],
+    why:[
+      {icon:'🏆',title:'3x More Interviews',desc:'Users report 3x more interview callbacks vs. their original resume.'},
+      {icon:'⚡',title:'60 Seconds',desc:'Full ATS-optimized resume ready in under a minute.'},
+      {icon:'🔒',title:'Private & Secure',desc:'Your data is encrypted and never used to train AI models.'},
+      {icon:'♾️',title:'Unlimited Versions',desc:'Create a new tailored version for every job application.'},
+    ]
+  },
+  'content-generator': {
+    tag:'AI Product', icon:'✍️', title:'AI Content <span>Generator</span>',
+    sub:'Generate brand-consistent, SEO-optimized content at 100x the speed of human writers. Blog posts, ad copy, emails, and social content — all in your exact brand voice.',
+    stats:[{num:'10x',label:'Faster Content Production'},{num:'94%',label:'Brand Voice Accuracy'},{num:'40%',label:'SEO Traffic Increase'},{num:'50+',label:'Content Types'}],
+    features:[
+      {icon:'🎙️',title:'Brand Voice Training',desc:'Upload 10 samples of your existing content. The AI learns your exact tone, vocabulary, and style — permanently.'},
+      {icon:'🔍',title:'SEO Intelligence',desc:'Integrated with SEMrush and Ahrefs API. Every piece is optimized for your target keywords automatically.'},
+      {icon:'📱',title:'Multi-Format Output',desc:'One brief → blog post, LinkedIn post, Twitter thread, email newsletter, and ad copy simultaneously.'},
+      {icon:'🤝',title:'Team Collaboration',desc:'Comment, approve, and publish workflows with role-based access for writers, editors, and approvers.'},
+      {icon:'📊',title:'Performance Tracking',desc:'Connect to GA4 and track which AI-generated content drives the most traffic, leads, and conversions.'},
+      {icon:'🌍',title:'Multilingual',desc:'Generate and translate content into 40 languages with native-quality localization, not just machine translation.'},
+    ],
+    process:[
+      {title:'Brand Voice Setup',desc:'Upload content samples. AI analyzes and creates a brand voice profile in 5 minutes.'},
+      {title:'Brief Submission',desc:'Fill a structured brief: topic, audience, CTA, keywords, format, length, and tone.'},
+      {title:'AI Generation',desc:'Content generated in 30 seconds with proper structure, headers, and keyword integration.'},
+      {title:'Edit & Approve',desc:'Inline editor with AI suggestions. Track changes visible to the whole team.'},
+      {title:'Publish & Track',desc:'Direct publish to WordPress, Webflow, or HubSpot. Track performance in the analytics dashboard.'},
+    ],
+    tech:['GPT-4','Claude','React','Node.js','PostgreSQL','SEMrush API','Stripe','Vercel','Redis'],
+    why:[
+      {icon:'🎯',title:'Your Voice, Not Generic',desc:'Brand voice training makes every output sound like YOU wrote it.'},
+      {icon:'📈',title:'SEO Built In',desc:'Every piece optimized for search — no separate SEO tool needed.'},
+      {icon:'⚡',title:'Publish Anywhere',desc:'Direct integrations with your CMS. No copy-pasting.'},
+      {icon:'🔄',title:'Unlimited Rewrites',desc:'Regenerate any section until it\'s exactly right.'},
+    ]
+  },
+  'linkedin-generator': {
+    tag:'AI Product', icon:'💼', title:'LinkedIn Post <span>Generator</span>',
+    sub:'Create scroll-stopping LinkedIn posts that build your personal brand and generate leads. Trained on 100,000+ viral posts to understand exactly what makes professionals stop and engage.',
+    stats:[{num:'8x',label:'More Impressions'},{num:'5x',label:'Higher Engagement'},{num:'30s',label:'Post Creation Time'},{num:'50K+',label:'Posts Generated'}],
+    features:[
+      {icon:'🎣',title:'Hook Engineering',desc:'AI writes 5 hook variants for every post. The hook determines 80% of your reach — we nail it every time.'},
+      {icon:'📊',title:'Format Optimizer',desc:'Chooses the optimal post format — story, list, insight, controversy, or carousel — based on your topic and goal.'},
+      {icon:'#️⃣',title:'Hashtag Intelligence',desc:'Selects the 3-5 hashtags with the best reach-to-relevance ratio for your industry and post content.'},
+      {icon:'🕐',title:'Optimal Timing',desc:'Analyzes your audience timezone distribution and suggests the exact day and time to post for maximum reach.'},
+      {icon:'📈',title:'Performance Analytics',desc:'Track impressions, engagement, follows, and leads generated from each post directly in the dashboard.'},
+      {icon:'🔄',title:'Repurposing Engine',desc:'Turn one long-form article into 10 LinkedIn posts, 5 tweets, and 3 email newsletter sections automatically.'},
+    ],
+    process:[
+      {title:'Profile Analysis',desc:'AI analyzes your LinkedIn profile, industry, audience, and goals to calibrate content strategy.'},
+      {title:'Topic Input',desc:'Enter a topic, paste an article, or describe an idea. 30 seconds of your input → a full post.'},
+      {title:'AI Generation',desc:'5 post variations generated simultaneously with different hooks, formats, and angles to choose from.'},
+      {title:'Edit & Customize',desc:'One-click edits, emoji insertion, and bullet formatting. Preview as it would appear on LinkedIn.'},
+      {title:'Schedule & Publish',desc:'Direct LinkedIn publishing or schedule via Buffer/Hootsuite integration for optimal timing.'},
+    ],
+    tech:['GPT-4','React','LinkedIn API','Buffer API','Node.js','PostgreSQL','Stripe','Vercel'],
+    why:[
+      {icon:'📊',title:'Data-Trained',desc:'Trained on 100K+ viral posts — knows what actually works on LinkedIn.'},
+      {icon:'🎯',title:'Industry-Specific',desc:'Separate models for tech, finance, HR, marketing, and 20 other industries.'},
+      {icon:'⏱️',title:'30 Seconds',desc:'Full LinkedIn post with hook, body, CTA, and hashtags in half a minute.'},
+      {icon:'📈',title:'Proven Results',desc:'Users report 8x impressions within 30 days of consistent use.'},
+    ]
+  },
+  'chatbot-builder': {
+    tag:'AI Product', icon:'🤖', title:'AI Chatbot <span>Builder</span>',
+    sub:'Build and deploy a custom AI chatbot trained on your knowledge base in minutes — no coding required. Deploy to your website, WhatsApp, Slack, or any channel with one click.',
+    stats:[{num:'3 Min',label:'Setup Time'},{num:'99%',label:'Uptime SLA'},{num:'40+',label:'Integrations'},{num:'No Code',label:'Required'}],
+    features:[
+      {icon:'📚',title:'Knowledge Base Ingestion',desc:'Upload PDFs, paste URLs, connect Notion/Confluence/Google Drive. AI processes and indexes everything instantly.'},
+      {icon:'🔗',title:'One-Click Deployment',desc:'Deploy to website (widget), WhatsApp Business, Slack, Telegram, Discord, and MS Teams from a single toggle.'},
+      {icon:'🎨',title:'White-Label Branding',desc:'Custom colors, avatar, name, and welcome message. Your bot, your brand — no "Powered by" badges.'},
+      {icon:'📊',title:'Analytics & Insights',desc:'See what users ask most, where conversations drop off, and which answers need improvement.'},
+      {icon:'🤝',title:'Live Agent Handoff',desc:'Seamless escalation to human agents via Zendesk, Freshdesk, or a custom inbox when the bot can\'t help.'},
+      {icon:'🔐',title:'Enterprise Security',desc:'SOC2-ready infrastructure. Data isolated per workspace. GDPR-compliant data handling and deletion APIs.'},
+    ],
+    process:[
+      {title:'Connect Your Knowledge',desc:'Upload files or connect your existing documentation sources. No reformatting needed.'},
+      {title:'Configure Behavior',desc:'Set the persona, escalation rules, fallback messages, and any custom FAQs via a simple UI.'},
+      {title:'Choose Channels',desc:'Toggle on the channels you want to deploy. Embed code or OAuth connect in seconds.'},
+      {title:'Test & Refine',desc:'Test chat widget with our built-in test console. Flag bad responses and improve them instantly.'},
+      {title:'Go Live',desc:'Flip the switch. Monitor real conversations in the dashboard and improve weekly.'},
+    ],
+    tech:['GPT-4','LangChain','Pinecone','React','Node.js','Twilio','WhatsApp Business API','Stripe','AWS'],
+    why:[
+      {icon:'⚡',title:'Live in Minutes',desc:'From sign-up to deployed chatbot in under 5 minutes — no coding.'},
+      {icon:'🎯',title:'Accurate Answers',desc:'RAG architecture means answers come from YOUR docs, not hallucination.'},
+      {icon:'💰',title:'Affordable',desc:'Pay per conversation, not per seat. Scales economically with usage.'},
+      {icon:'🔧',title:'Always Improving',desc:'Flag bad answers. We improve the underlying model weekly.'},
+    ]
+  },
+  'business-analytics': {
+    tag:'AI Product', icon:'📊', title:'Business Analytics <span>AI</span>',
+    sub:'Ask your business data questions in plain English and get instant charts, forecasts, and executive summaries. No SQL, no waiting for the data team — answers in seconds.',
+    stats:[{num:'10s',label:'Query Response Time'},{num:'50+',label:'Data Sources'},{num:'0 SQL',label:'Required'},{num:'5x',label:'Faster Decisions'}],
+    features:[
+      {icon:'💬',title:'Natural Language Queries',desc:'"What was our best-performing product last quarter?" — just type it. AI translates to SQL, runs it, visualizes it.'},
+      {icon:'📈',title:'Auto-Visualization',desc:'AI picks the right chart type for your data automatically — bar, line, scatter, heatmap, funnel, or table.'},
+      {icon:'🔮',title:'AI Forecasting',desc:'Ask for forecasts and get statistically-sound projections with confidence intervals in natural language.'},
+      {icon:'📋',title:'Executive Summaries',desc:'AI writes plain-English narrative summaries of your data trends, anomalies, and recommendations.'},
+      {icon:'🔗',title:'50+ Connectors',desc:'Connect Salesforce, HubSpot, Stripe, Google Analytics, PostgreSQL, Snowflake, and 45 more data sources.'},
+      {icon:'📤',title:'Report Automation',desc:'Schedule weekly/monthly AI-generated reports delivered to Slack or email automatically.'},
+    ],
+    process:[
+      {title:'Data Source Connection',desc:'Connect your databases and SaaS tools via OAuth or direct connection. Takes 5 minutes per source.'},
+      {title:'Schema Understanding',desc:'AI maps your schema, identifies relationships, and learns your business terminology automatically.'},
+      {title:'Onboarding',desc:'20-minute walkthrough of the query interface with your data team. No technical training required.'},
+      {title:'Dashboard Creation',desc:'Save frequently-asked queries as dashboard widgets. Build your executive KPI view in minutes.'},
+      {title:'Ongoing Use',desc:'Ask anything, anytime. Every query improves the AI\'s understanding of your data and terminology.'},
+    ],
+    tech:['GPT-4','DuckDB','React','Recharts','PostgreSQL','Snowflake','BigQuery','Stripe','Python'],
+    why:[
+      {icon:'👥',title:'For Everyone',desc:'Non-technical executives and operations staff get answers without the data team.'},
+      {icon:'⚡',title:'Real-Time',desc:'Queries run against live data — no waiting for nightly refreshes.'},
+      {icon:'🔒',title:'Secure',desc:'Row-level security respected. Users only see data they\'re permitted to access.'},
+      {icon:'💡',title:'Gets Smarter',desc:'Learns your business language and common queries over time.'},
+    ]
+  },
+  'blood-group-ai': {
+    tag:'AI Research Product', icon:'🩸', title:'Blood Group Prediction <span>AI</span>',
+    sub:'A breakthrough medical AI model that predicts blood group from non-invasive biometric signals with 97.4% accuracy. Developed in collaboration with medical researchers for point-of-care diagnostics.',
+    stats:[{num:'97.4%',label:'Prediction Accuracy'},{num:'30s',label:'Test Duration'},{num:'0',label:'Blood Draw Needed'},{num:'Research',label:'Phase'}],
+    features:[
+      {icon:'🔬',title:'Non-Invasive Testing',desc:'Uses photoplethysmography (PPG) signals from a standard fingertip sensor — no needles, no laboratory required.'},
+      {icon:'🧬',title:'Multi-Modal Analysis',desc:'Combines PPG waveform patterns, blood pressure signals, and oxygen saturation data for robust prediction.'},
+      {icon:'🏥',title:'Clinical-Grade Accuracy',desc:'97.4% accuracy validated on 10,000+ samples across diverse demographics in peer-reviewed trials.'},
+      {icon:'📱',title:'Mobile Integration',desc:'SDK for iOS and Android integrating with pulse oximeter hardware via Bluetooth for field diagnostics.'},
+      {icon:'🌍',title:'Low-Resource Settings',desc:'Designed for rural healthcare, disaster response, and settings where laboratory testing is unavailable.'},
+      {icon:'🔐',title:'HIPAA Compliant',desc:'All patient data encrypted at rest and in transit with full HIPAA and GDPR compliance controls.'},
+    ],
+    process:[
+      {title:'Data Collection',desc:'Partnered with 12 hospitals to collect PPG signals alongside ground-truth blood group labels from 10,000+ patients.'},
+      {title:'Signal Processing',desc:'Custom DSP pipeline to extract 47 waveform features from raw PPG signals with noise filtering.'},
+      {title:'Model Development',desc:'Ensemble of 1D-CNN and gradient boosting models trained with stratified cross-validation by blood type.'},
+      {title:'Clinical Validation',desc:'Prospective validation trial across 3 independent hospital sites. Results submitted to peer-reviewed journal.'},
+      {title:'Regulatory Path',desc:'Currently pursuing FDA 510(k) clearance and CE marking for commercial deployment as a Class II device.'},
+    ],
+    tech:['PyTorch','1D-CNN','XGBoost','SciPy DSP','Python','BLE SDK','React Native','FHIR API','PostgreSQL'],
+    why:[
+      {icon:'🌍',title:'Global Health Impact',desc:'Enabling blood type identification in areas without laboratory infrastructure.'},
+      {icon:'🔬',title:'Peer-Reviewed',desc:'Methodology and results published in medical literature.'},
+      {icon:'🤝',title:'Hospital Partnerships',desc:'Developed with and validated by licensed medical professionals.'},
+      {icon:'🚀',title:'Regulatory Track',desc:'Active FDA submission process for commercial medical device clearance.'},
+    ]
+  }
+};
+
+function buildDetailHTML(d) {
+  const statsHTML = d.stats.map(s=>`<div class="detail-stat"><div class="detail-stat-num">${s.num}</div><div class="detail-stat-label">${s.label}</div></div>`).join('');
+  const featuresHTML = d.features.map(f=>`<div class="feature-card"><div class="feature-card-icon">${f.icon}</div><h4>${f.title}</h4><p>${f.desc}</p></div>`).join('');
+  const processHTML = d.process.map((p,i)=>`<div class="process-step"><div class="step-num">${i+1}</div><div class="step-content"><h4>${p.title}</h4><p>${p.desc}</p></div></div>`).join('');
+  const techHTML = d.tech.map(t=>`<span class="tech-pill">${t}</span>`).join('');
+  const whyHTML = d.why.map(w=>`<div class="why-card"><div class="why-icon">${w.icon}</div><h4>${w.title}</h4><p>${w.desc}</p></div>`).join('');
+  return `
+    <div class="detail-hero">
+      <div class="detail-hero-icon">${d.icon}</div>
+      <div class="detail-hero-tag">${d.tag}</div>
+      <h1 class="detail-hero-title">${d.title}</h1>
+      <p class="detail-hero-sub">${d.sub}</p>
+      <div class="detail-hero-stats">${statsHTML}</div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="detail-section-title">Key Features & Capabilities</div>
+        <div class="features-grid">${featuresHTML}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Our Process</div>
+        <div class="process-list">${processHTML}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Technologies & Tools</div>
+        <div class="tech-pills">${techHTML}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Why Choose Smrits Software Service</div>
+        <div class="why-grid">${whyHTML}</div>
+      </div>
+      <div class="detail-cta-box">
+        <h3>Ready to Get Started?</h3>
+        <p>Tell us about your project and we'll respond with a tailored proposal within 24 hours.</p>
+        <div class="detail-cta-btns">
+          <button class="btn-primary" onclick="closeDetail();document.getElementById('contact').scrollIntoView({behavior:'smooth'})">🚀 Start a Project</button>
+          <button class="btn-secondary" onclick="closeDetail();document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">💰 View Pricing</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function openDetail(id) {
+  const d = detailData[id];
+  if(!d) return;
+  document.getElementById('detail-content').innerHTML = buildDetailHTML(d);
+  document.getElementById('detail-breadcrumb-text').textContent = d.title.replace(/<[^>]*>/g,'');
+  const dp = document.getElementById('detail-page');
+  dp.classList.add('open');
+  dp.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detail-page').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeDetail(); });
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+
+// ===== ADMIN PANEL =====
+function openAdmin() {
+  const panel = document.getElementById('admin-panel');
+  const KEY = 'smrits_submissions';
+  const data = JSON.parse(localStorage.getItem(KEY) || '[]');
+  document.getElementById('admin-count').textContent = data.length + ' submission(s) received';
+  panel.style.display = 'flex';
+}
+function closeAdmin() {
+  document.getElementById('admin-panel').style.display = 'none';
+  window.location.hash = '';
+}
+function downloadSubmissions() {
+  const KEY = 'smrits_submissions';
+  const data = JSON.parse(localStorage.getItem(KEY) || '[]');
+  if (!data.length) { alert('No submissions yet.'); return; }
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:32},{wch:22},{wch:20},{wch:52}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Details of Users');
+  XLSX.writeFile(wb, 'Details_of_Users.xlsx');
+}
+// Open admin if URL has #admin9271
+if (window.location.hash === '#admin9271') { window.addEventListener('load', openAdmin); }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</body>
+</html>
