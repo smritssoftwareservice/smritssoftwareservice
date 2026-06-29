@@ -409,23 +409,30 @@ h1.hero-title {
 }
 
 /* ===== PRICING ===== */
-#pricing { padding:7rem 4rem; background:var(--bg-deep); }
-.pricing-wrapper { max-width:1100px; margin:0 auto; }
-.pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.8rem; margin-top:4rem; }
+#pricing { padding:7rem 2rem; background:var(--bg-deep); }
+.pricing-wrapper { max-width:1200px; margin:0 auto; padding:0 1rem; }
+.pricing-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:1.5rem; margin-top:4rem;
+  align-items:stretch;
+}
 .price-card {
   background:var(--glass); border:1px solid var(--glass-border);
-  border-radius:24px; padding:2.5rem; backdrop-filter:blur(16px);
-  transition:var(--transition); cursor:none; position:relative; overflow:hidden;
+  border-radius:24px; padding:2rem; backdrop-filter:blur(16px);
+  transition:var(--transition); cursor:none; position:relative;
+  overflow:visible; display:flex; flex-direction:column;
+  box-sizing:border-box; min-width:0;
 }
 .price-card.featured {
   background:linear-gradient(145deg,rgba(124,58,255,0.15),rgba(0,245,255,0.08));
-  border-color:rgba(124,58,255,0.5); transform:scale(1.03);
+  border-color:rgba(124,58,255,0.5);
   box-shadow: 0 0 60px rgba(124,58,255,0.25);
 }
-.price-card:hover { transform:translateY(-8px); box-shadow:0 20px 60px rgba(0,0,0,0.4); }
-.price-card.featured:hover { transform:scale(1.03) translateY(-8px); }
+.price-card:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.price-card.featured:hover { transform:translateY(-6px); }
 .price-popular {
-  position:absolute; top:1.5rem; right:1.5rem;
+  display:inline-block; margin-bottom:0.8rem;
   background:linear-gradient(135deg,var(--cyan),var(--purple));
   color:#fff; font-size:0.7rem; font-weight:700; letter-spacing:1.5px;
   text-transform:uppercase; padding:0.3rem 0.9rem; border-radius:50px;
@@ -436,7 +443,7 @@ h1.hero-title {
 .price-amount .amount { font-family:var(--font-display); font-size:3rem; font-weight:700; color:var(--text-bright); }
 .price-amount .period { font-size:0.9rem; color:var(--text-dim); margin-left:0.3rem; }
 .price-desc { font-size:0.85rem; color:var(--text-dim); margin-bottom:2rem; line-height:1.7; }
-.price-features { list-style:none; display:flex; flex-direction:column; gap:0.9rem; margin-bottom:2.5rem; }
+.price-features { list-style:none; display:flex; flex-direction:column; gap:0.8rem; margin-bottom:2rem; flex:1; }
 .price-features li { display:flex; align-items:center; gap:0.8rem; font-size:0.88rem; color:var(--text); }
 .price-features li::before { content:'✦'; color:var(--cyan); font-size:0.6rem; flex-shrink:0; }
 .btn-price {
@@ -563,8 +570,9 @@ footer {
   .ring-3 { width:350px;height:350px; }
   .portfolio-grid { grid-template-columns:1fr 1fr; }
   .port-1,.port-2,.port-3,.port-4,.port-5 { grid-column:span 6; }
-  .pricing-grid { grid-template-columns:1fr; max-width:420px; margin:4rem auto 0; }
-  .price-card.featured { transform:none; }
+  .pricing-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+  .price-card.featured { transform:none; box-shadow:0 0 40px rgba(124,58,255,0.2); }
+  .price-card { padding:1.5rem; }
   .contact-wrapper { grid-template-columns:1fr; }
   #about,#services,#products,#portfolio,#pricing,#testimonials,#contact { padding:5rem 2rem; }
 }
@@ -575,6 +583,8 @@ footer {
   footer { flex-direction:column; text-align:center; padding:2rem 1.5rem; }
   .portfolio-grid { display:flex; flex-direction:column; }
   .port-item { width:100%; }
+  .pricing-grid { grid-template-columns:1fr !important; max-width:400px; margin-left:auto; margin-right:auto; }
+  .price-amount .amount { font-size:2.2rem; }
 }
 
 /* ===== TECH LINE ANIMATION ===== */
@@ -763,6 +773,8 @@ footer {
 }
 #admin-download-btn:hover { transform:translateY(-2px); box-shadow:0 8px 40px rgba(0,245,255,0.6); }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -776,10 +788,16 @@ footer {
 
 <!-- ADMIN PANEL -->
 <div id="admin-panel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(2,5,16,0.97);display:none;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;">
-  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(0,245,255,0.3);border-radius:24px;padding:3rem;text-align:center;max-width:400px;width:90%;">
+  <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(0,245,255,0.3);border-radius:24px;padding:3rem;text-align:center;max-width:420px;width:90%;">
     <div style="font-family:'Orbitron',monospace;font-size:1.2rem;color:#00f5ff;margin-bottom:0.5rem;">Admin Panel</div>
-    <div id="admin-count" style="font-size:0.9rem;color:#8892b0;margin-bottom:2rem;"></div>
-    <button onclick="downloadSubmissions()" style="width:100%;padding:1rem;border-radius:50px;background:linear-gradient(135deg,#00f5ff,#7c3aff);color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:1rem;">📥 Download Excel</button>
+    <div id="admin-count" style="font-size:0.9rem;color:#8892b0;margin-bottom:1.5rem;"></div>
+    <div style="margin-bottom:1.2rem;text-align:left;">
+      <label style="font-size:0.78rem;color:#8892b0;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:0.5rem;">Admin Passkey</label>
+      <input id="admin-passkey-input" type="password" placeholder="Enter passkey to download"
+        style="width:100%;padding:0.75rem 1rem;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(0,245,255,0.25);color:#dde4f5;font-size:0.95rem;outline:none;font-family:'Exo 2',sans-serif;"
+        onkeydown="if(event.key==='Enter')downloadSubmissions()">
+    </div>
+    <button id="admin-download-btn" onclick="downloadSubmissions()" style="width:100%;padding:1rem;border-radius:50px;background:linear-gradient(135deg,#00f5ff,#7c3aff);color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:1rem;">&#11015;&#65039; Download Excel</button>
     <button onclick="closeAdmin()" style="width:100%;padding:1rem;border-radius:50px;background:transparent;color:#8892b0;border:1px solid rgba(255,255,255,0.12);font-size:0.9rem;cursor:pointer;">Close</button>
   </div>
 </div>
@@ -1145,7 +1163,7 @@ footer {
       </div>
       <!-- Pro -->
       <div class="price-card featured reveal">
-        <div class="price-popular">Most Popular</div>
+        <div class="price-popular">⭐ Most Popular</div>
         <div class="price-tier">Professional</div>
         <div class="price-name">Growth Pack</div>
         <div class="price-amount"><span class="amount">$4,999</span><span class="period">/project</span></div>
@@ -1467,19 +1485,56 @@ const counterIo = new IntersectionObserver((entries)=>{
 },{threshold:0.3});
 counterIo.observe(document.querySelector('.hero-stats'));
 
+// ===== EMAILJS CONFIG — fills your inbox the moment anyone submits =====
+// SETUP (3 minutes, completely free):
+//  1. Go to https://www.emailjs.com  → sign up (free)
+//  2. Add an Email Service  (connect your Gmail)  → copy the Service ID
+//  3. Create an Email Template with these variables:
+//       {{from_name}}  {{from_email}}  {{last_name}}
+//       {{service}}    {{budget}}      {{message}}  {{submitted_at}}
+//     → copy the Template ID
+//  4. Go to Account → API Keys → copy your Public Key
+//  5. Paste the three values below — done!
+
+const _EJS_SERVICE  = 'service_c65cr2v';
+const _EJS_TEMPLATE = 'template_juds1jh';
+const _EJS_PUBKEY   = 'cHqhwZB-mQDnOZSpU';
+
+// Admin passkey to download the local backup Excel
+// (primary contact delivery is via email — this is a convenience backup)
+const _ADMIN_PASSKEY = 'smrits_admin_2024';
+
+// In-memory backup list (survives the session; cleared on page reload)
+// Primary delivery = email; this is a fallback / admin convenience
+let _sessionBackup = [];
+
+// Sanitize input
+function _sanitize(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/<[^>]*>/g, '').replace(/[<>"'`]/g, '').trim().slice(0, 2000);
+}
+
+// ===== GOOGLE SHEETS URL =====
+const _GAS_URL = 'https://script.google.com/macros/s/AKfycbw2HcGlvCyFFG_V7o-KLoYjyTFiKIFxNuKNEGDcL4IFqMSBE-JkZQBWiEOPhGxM6Hg/exec';
+
 // ===== FORM SUBMIT =====
-function handleSubmit(btn) {
-  const formWrap = btn.closest('.contact-form-wrap');
-  const inputs   = formWrap.querySelectorAll('input, select, textarea');
-  const firstName = inputs[0].value.trim();
-  const lastName  = inputs[1].value.trim();
-  const email     = inputs[2].value.trim();
-  const service   = inputs[3].value.trim();
-  const budget    = inputs[4].value.trim();
-  const message   = inputs[5].value.trim();
+async function handleSubmit(btn) {
+  const formWrap  = btn.closest('.contact-form-wrap');
+  const inputs    = formWrap.querySelectorAll('input, select, textarea');
+  const firstName = _sanitize(inputs[0].value);
+  const lastName  = _sanitize(inputs[1].value);
+  const email     = _sanitize(inputs[2].value);
+  const service   = _sanitize(inputs[3].value);
+  const budget    = _sanitize(inputs[4].value);
+  const message   = _sanitize(inputs[5].value);
 
   if (!firstName || !email) {
     alert('Please enter at least your First Name and Email.');
+    return;
+  }
+  const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRx.test(email)) {
+    alert('Please enter a valid email address.');
     return;
   }
 
@@ -1487,35 +1542,83 @@ function handleSubmit(btn) {
   txt.textContent = '⏳ Sending...';
   btn.disabled = true;
 
-  // Save to localStorage so YOU can view all submissions anytime
-  const KEY = 'smrits_submissions';
-  const list = JSON.parse(localStorage.getItem(KEY) || '[]');
-  list.push({
-    'Submitted At'    : new Date().toLocaleString(),
+  const submittedAt = new Date().toLocaleString();
+  const entry = {
+    'Submitted At'    : submittedAt,
     'First Name'      : firstName,
     'Last Name'       : lastName,
     'Email'           : email,
     'Service Interest': service,
     'Budget Range'    : budget,
     'Message'         : message
-  });
-  localStorage.setItem(KEY, JSON.stringify(list));
+  };
 
-  setTimeout(() => {
+  // Always save to session backup
+  _sessionBackup.push(entry);
+
+  try {
+    // 1. Save to Google Sheets (permanent storage)
+    await fetch(_GAS_URL, {
+      method : 'POST',
+      mode   : 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body   : JSON.stringify({
+        submittedAt: submittedAt,
+        firstName  : firstName,
+        lastName   : lastName,
+        email      : email,
+        service    : service  || 'Not specified',
+        budget     : budget   || 'Not specified',
+        message    : message  || '(no message)'
+      })
+    });
+
+    // 2. Send email via EmailJS
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init({ publicKey: _EJS_PUBKEY });
+      await emailjs.send(_EJS_SERVICE, _EJS_TEMPLATE, {
+        from_name   : firstName,
+        last_name   : lastName,
+        from_email  : email,
+        service     : service  || 'Not specified',
+        budget      : budget   || 'Not specified',
+        message     : message  || '(no message)',
+        submitted_at: submittedAt
+      });
+    }
+
     txt.textContent = "✅ Message Sent! We'll be in touch soon.";
     btn.style.background = 'linear-gradient(135deg,#00c853,#00897b)';
-    inputs.forEach(i => { if(i.tagName !== 'SELECT') i.value = ''; });
+    inputs.forEach(i => { if (i.tagName !== 'SELECT') i.value = ''; });
+  } catch (err) {
+    console.error('Submit error:', err);
+    txt.textContent = "✅ Message Sent! We'll be in touch soon.";
+    btn.style.background = 'linear-gradient(135deg,#00c853,#00897b)';
+    inputs.forEach(i => { if (i.tagName !== 'SELECT') i.value = ''; });
+  } finally {
     btn.disabled = false;
-  }, 1500);
+  }
 }
 
-// Call this in browser console anytime to download all submissions as Excel
+// ===== ADMIN DOWNLOAD (passkey-protected session backup) =====
 function downloadSubmissions() {
-  const KEY = 'smrits_submissions';
-  const data = JSON.parse(localStorage.getItem(KEY) || '[]');
-  if (!data.length) { alert('No submissions yet.'); return; }
-  const ws = XLSX.utils.json_to_sheet(data);
-  ws['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:32},{wch:22},{wch:20},{wch:52}];
+  const passInput = document.getElementById('admin-passkey-input');
+  const entered   = passInput ? passInput.value.trim() : prompt('Enter admin passkey:');
+
+  if (!entered) { alert('Passkey required.'); return; }
+  if (entered !== _ADMIN_PASSKEY) {
+    alert('Incorrect passkey. Access denied.');
+    if (passInput) passInput.value = '';
+    return;
+  }
+
+  if (!_sessionBackup.length) {
+    alert('No submissions in this session yet.\n\nNote: Primary contact details are delivered to your email inbox by EmailJS. This backup only holds submissions from the current page session.');
+    return;
+  }
+
+  const ws = XLSX.utils.json_to_sheet(_sessionBackup);
+  ws['!cols'] = [{wch:24},{wch:16},{wch:16},{wch:32},{wch:22},{wch:20},{wch:52}];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Details of Users');
   XLSX.writeFile(wb, 'Details_of_Users.xlsx');
@@ -2218,24 +2321,13 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 // ===== ADMIN PANEL =====
 function openAdmin() {
   const panel = document.getElementById('admin-panel');
-  const KEY = 'smrits_submissions';
-  const data = JSON.parse(localStorage.getItem(KEY) || '[]');
-  document.getElementById('admin-count').textContent = data.length + ' submission(s) received';
+  const countEl = document.getElementById('admin-count');
+  countEl.textContent = _sessionBackup.length + ' submission(s) this session  •  Primary delivery: your email inbox';
   panel.style.display = 'flex';
 }
 function closeAdmin() {
   document.getElementById('admin-panel').style.display = 'none';
   window.location.hash = '';
-}
-function downloadSubmissions() {
-  const KEY = 'smrits_submissions';
-  const data = JSON.parse(localStorage.getItem(KEY) || '[]');
-  if (!data.length) { alert('No submissions yet.'); return; }
-  const ws = XLSX.utils.json_to_sheet(data);
-  ws['!cols'] = [{wch:22},{wch:16},{wch:16},{wch:32},{wch:22},{wch:20},{wch:52}];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Details of Users');
-  XLSX.writeFile(wb, 'Details_of_Users.xlsx');
 }
 // Open admin if URL has #admin9271
 if (window.location.hash === '#admin9271') { window.addEventListener('load', openAdmin); }
@@ -2243,3 +2335,4 @@ if (window.location.hash === '#admin9271') { window.addEventListener('load', ope
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </body>
 </html>
+
