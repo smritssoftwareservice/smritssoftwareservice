@@ -3084,6 +3084,9 @@ function closeAdmin() {
   window.location.hash = '';
 }
 // Open admin if URL has #admin9271
+if (window.location.hash === '#admin9271') { window.addEventListener('load', openAdmin); }
+</script>
+
 <!-- COOKIE CONSENT BANNER -->
 <div id="cookie-banner" style="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(180%);z-index:99999;width:calc(100% - 3rem);max-width:820px;background:rgba(6,13,31,0.94);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:1.2rem 2rem;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,0.6),0 0 30px rgba(0,245,255,0.15);transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;">
   <div style="font-size:0.88rem;color:#dde4f5;flex:1;min-width:280px;line-height:1.6;">
