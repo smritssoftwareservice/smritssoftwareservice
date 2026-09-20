@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020510" />
+      <stop offset="100%" stop-color="#060d1f" />
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f5ff" />
+      <stop offset="100%" stop-color="#7c3aff" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Grid Lines -->
+  <path d="M0 100 H1200 M0 200 H1200 M0 300 H1200 M0 400 H1200 M0 500 H1200" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <path d="M200 0 V630 M400 0 V630 M600 0 V630 M800 0 V630 M1000 0 V630" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  
+  <!-- Glow Orb -->
+  <circle cx="950" cy="200" r="300" fill="#7c3aff" opacity="0.15" filter="blur(80px)"/>
+  <circle cx="250" cy="450" r="250" fill="#00f5ff" opacity="0.15" filter="blur(80px)"/>
+
+  <!-- Card Border -->
+  <rect x="80" y="80" width="1040" height="470" rx="32" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+
+  <!-- Logo Badge -->
+  <rect x="130" y="140" width="220" height="44" rx="22" fill="rgba(0,245,255,0.1)" stroke="rgba(0,245,255,0.3)" stroke-width="1"/>
+  <text x="240" y="168" fill="#00f5ff" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle" letter-spacing="2">SMRITS SOFTWARE</text>
+
+  <!-- Headline -->
+  <text x="130" y="270" fill="#ffffff" font-family="sans-serif" font-size="48" font-weight="900" letter-spacing="1">AI Development, Software Solutions</text>
+  <text x="130" y="335" fill="url(#brandGrad)" font-family="sans-serif" font-size="48" font-weight="900" letter-spacing="1">&amp; Intelligent Automation</text>
+
+  <!-- Subtitle -->
+  <text x="130" y="410" fill="#8892b0" font-family="sans-serif" font-size="22" max-width="800">We craft cutting-edge AI systems, SaaS platforms, and enterprise software solutions.</text>
+
+  <!-- Website URL -->
+  <text x="130" y="480" fill="#00f5ff" font-family="sans-serif" font-size="20" font-weight="600">www.smrits.online</text>
+</svg>
