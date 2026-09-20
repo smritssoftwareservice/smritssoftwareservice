@@ -661,9 +661,9 @@ footer {
 #loader {
   position:fixed; inset:0; z-index:9999; background:var(--bg-deep);
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem;
-  transition:opacity 0.6s, visibility 0.6s;
+  transition:opacity 0.5s ease, visibility 0.5s ease;
 }
-#loader.hidden { opacity:0; visibility:hidden; }
+#loader.hidden { opacity:0; visibility:hidden; pointer-events:none !important; display:none !important; }
 .loader-logo { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(135deg,var(--cyan),var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:2px; }
 .loader-bar { width:200px; height:2px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
 .loader-fill { height:100%; width:0; background:linear-gradient(90deg,var(--cyan),var(--purple)); border-radius:2px; transition:width 0.1s; }
@@ -1972,11 +1972,28 @@ footer.site-footer {
 const loaderFill = document.getElementById('loader-fill');
 const loader = document.getElementById('loader');
 let progress = 0;
+
+function hideLoader() {
+  if (loader && !loader.classList.contains('hidden')) {
+    if (loaderFill) loaderFill.style.width = '100%';
+    loader.classList.add('hidden');
+    setTimeout(() => { loader.style.display = 'none'; }, 500);
+  }
+}
+
 const loadInterval = setInterval(() => {
-  progress += Math.random() * 15;
-  if (progress >= 100) { progress = 100; clearInterval(loadInterval); setTimeout(() => { loader.classList.add('hidden'); }, 400); }
-  loaderFill.style.width = progress + '%';
-}, 120);
+  progress += Math.random() * 25 + 10;
+  if (progress >= 100) {
+    progress = 100;
+    clearInterval(loadInterval);
+    setTimeout(hideLoader, 200);
+  }
+  if (loaderFill) loaderFill.style.width = progress + '%';
+}, 60);
+
+// Fail-safe fallbacks: ensure loader always disappears within 1.2s maximum
+setTimeout(hideLoader, 1200);
+window.addEventListener('load', hideLoader);
 
 // ===== CURSOR =====
 const cursor = document.getElementById('cursor');
